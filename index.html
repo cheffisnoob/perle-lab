@@ -439,6 +439,28 @@ button { font-family: var(--f-ui); }
   .review-head, .review-row { grid-template-columns: 28px 1fr 70px; }
   .review-head > *:nth-child(3), .review-row > *:nth-child(3) { display: none; }
 }
+
+/* ── Share on X button ── */
+.btn-share-x {
+  padding: 13px 20px;
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--r);
+  color: #fff;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.18s;
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+.btn-share-x:hover {
+  background: #1a1a1a;
+  border-color: rgba(255,255,255,0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+.btn-share-x svg { flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -660,6 +682,12 @@ button { font-family: var(--f-ui); }
       <div class="res-btns">
         <button class="btn-back" onclick="goHome()">← Back</button>
         <button class="btn-retry" onclick="retryQuiz()">↺ Run Again</button>
+        <a class="btn-share-x" id="btn-share-x" href="#" target="_blank" rel="noopener noreferrer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.738l7.731-8.835L1.254 2.25H8.08l4.265 5.638 5.899-5.638zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          Share on X
+        </a>
       </div>
 
     </div>
@@ -993,6 +1021,13 @@ function showResults() {
   document.getElementById('ls-streak').textContent = '🔥 ' + bestStreak;
   document.getElementById('ls-pts').textContent    = pts;
   document.getElementById('nav-pts').textContent   = pts;
+
+  // Build X share URL
+  const diffLabel = difficulty === 'easy' ? 'Easy' : 'Hard';
+  const modeLabel = mode === 'timer' ? 'Timer' : 'Free Play';
+  const tweetText = `I just scored ${score}/${total} (${pct}%) on the Perle Labs AI Quiz — ${label.replace(/[^\w\s—]/g,'').trim()} mode, ${diffLabel} difficulty.\n\nThink you can beat me? 👇\nhttps://perlelabs.io`;
+  const shareUrl = 'https://x.com/intent/tweet?text=' + encodeURIComponent(tweetText);
+  document.getElementById('btn-share-x').href = shareUrl;
 }
 
 function showScreen(id) {
