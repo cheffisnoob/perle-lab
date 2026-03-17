@@ -454,7 +454,7 @@ button { font-family: var(--f-ui); }
     <span class="nav-title">PERLE <span>LABS</span></span>
   </div>
   <div class="nav-right">
-    <span class="nav-stat">Bank <strong id="nav-qcount">—</strong></span>
+    <span class="nav-stat">Questions <strong id="nav-qcount">—</strong></span>
     <span class="nav-stat">Points <strong id="nav-pts">0</strong></span>
   </div>
 </nav>
@@ -498,11 +498,11 @@ button { font-family: var(--f-ui); }
       </div>
     </div>
 
-    <button class="sb-launch" onclick="startQuiz()">▶ &nbsp;Launch Quiz</button>
+    <button class="sb-launch" onclick="startQuiz()">▶ &nbsp;Start Quiz</button>
 
     <div class="sb-divider"></div>
 
-    <div class="sb-section"><div class="sb-label">Session Stats</div></div>
+    <div class="sb-section"><div class="sb-label">Your Session</div></div>
     <div class="sb-stats">
       <div class="lstat"><span class="lstat-k">Score</span><span class="lstat-v o" id="ls-score">—</span></div>
       <div class="lstat"><span class="lstat-k">Accuracy</span><span class="lstat-v g" id="ls-acc">—</span></div>
@@ -521,23 +521,23 @@ button { font-family: var(--f-ui); }
         <div class="dash-card">
           <div class="dc-label">Easy Questions</div>
           <div class="dc-val">50</div>
-          <div class="dc-sub">Beginner friendly</div>
+          <div class="dc-sub">Start here</div>
         </div>
         <div class="dash-card">
           <div class="dc-label">Hard Questions</div>
           <div class="dc-val">70</div>
-          <div class="dc-sub">Advanced concepts</div>
+          <div class="dc-sub">For the deep thinkers</div>
         </div>
         <div class="dash-card">
           <div class="dc-label">Topic Areas</div>
           <div class="dc-val">7</div>
-          <div class="dc-sub">Across AI & Data</div>
+          <div class="dc-sub">Spanning the full field</div>
         </div>
       </div>
 
       <div class="dash-grid-mid">
         <div class="topics-card">
-          <div class="dc-label">Topics Covered</div>
+          <div class="dc-label">What's Inside</div>
           <div class="topic-list">
             <div class="topic-row"><div class="topic-dot" style="background:var(--orange)"></div><span class="topic-name">ML Fundamentals</span><span class="topic-count">20q</span></div>
             <div class="topic-row"><div class="topic-dot" style="background:var(--blue-2)"></div><span class="topic-name">Data Annotation</span><span class="topic-count">18q</span></div>
@@ -548,12 +548,12 @@ button { font-family: var(--f-ui); }
           </div>
         </div>
         <div class="how-card">
-          <div class="dc-label">How To Play</div>
+          <div class="dc-label">Getting Started</div>
           <div class="how-steps">
-            <div class="how-step"><div class="step-num">1</div><div class="step-text">Choose <strong>Easy</strong> or <strong>Hard</strong> difficulty from the sidebar</div></div>
-            <div class="how-step"><div class="step-num">2</div><div class="step-text">Select <strong>Timer</strong> or <strong>Free Play</strong> mode</div></div>
-            <div class="how-step"><div class="step-num">3</div><div class="step-text">Pick how many questions — 10, 25, or 50</div></div>
-            <div class="how-step"><div class="step-num">4</div><div class="step-text">Hit <strong>Launch Quiz</strong> and answer — earn Perle Points for every correct answer</div></div>
+            <div class="how-step"><div class="step-num">1</div><div class="step-text">Pick your difficulty — <strong>Easy</strong> if you're getting started, <strong>Hard</strong> if you want a real challenge</div></div>
+            <div class="how-step"><div class="step-num">2</div><div class="step-text">Choose <strong>Timer</strong> mode for pressure, or <strong>Free Play</strong> if you want to think without the clock</div></div>
+            <div class="how-step"><div class="step-num">3</div><div class="step-text">Set your question count — a quick 10, a solid 25, or go all in with 50</div></div>
+            <div class="how-step"><div class="step-num">4</div><div class="step-text">Hit <strong>Start Quiz</strong> and go. Every correct answer earns Perle Points, and streaks multiply your score</div></div>
           </div>
         </div>
       </div>
@@ -563,15 +563,15 @@ button { font-family: var(--f-ui); }
           <div class="diff-info-card easy">
             <div class="diff-badge easy">Easy</div>
             <div class="diff-info-text">
-              <div class="di-title">Beginner Mode</div>
-              <div class="di-sub">Core AI/ML concepts, annotation basics, and data fundamentals</div>
+              <div class="di-title">Where it begins</div>
+              <div class="di-sub">Covers the essentials — AI basics, annotation, training data, and how models learn</div>
             </div>
           </div>
           <div class="diff-info-card hard">
             <div class="diff-badge hard">Hard</div>
             <div class="diff-info-text">
-              <div class="di-title">Advanced Mode</div>
-              <div class="di-sub">Transformers, RAG, federated learning, constitutional AI, Web3 data</div>
+              <div class="di-title">No hand-holding here</div>
+              <div class="di-sub">Transformers, RAG, federated learning, constitutional AI, decentralized data — the real depth</div>
             </div>
           </div>
         </div>
@@ -622,7 +622,7 @@ button { font-family: var(--f-ui); }
             <div class="mode-badge-dot"></div>
             <div>
               <div class="mode-badge-text" id="mode-badge-text">Timer</div>
-              <div class="mode-badge-sub">Active mode</div>
+              <div class="mode-badge-sub">Current mode</div>
             </div>
           </div>
         </div>
@@ -968,11 +968,11 @@ function showResults() {
   document.getElementById('st-pts').textContent     = pts;
 
   const tiers = [
-    [100,'🏆 Perfect Score','#FF6B1A','Exceptional — every question correct. Elite level.'],
-    [80, '⭐ Excellent',     '#FF8C42','Sharp. Strong command across all topic areas.'],
-    [60, '✅ Solid',         '#2979FF','Good foundations. A few areas to revisit.'],
-    [40, '📊 Average',       '#9A8F88','Decent start. Study the missed topics and retry.'],
-    [0,  '🔬 Needs Work',    '#FF4444','Hit the docs. Study, practice, come back stronger.'],
+    [100,'🏆 Perfect Score','#FF6B1A','Flawless. You didn\'t miss a single one — that\'s elite.'],
+    [80, '⭐ Excellent',     '#FF8C42','Really impressive. You clearly know your stuff across the board.'],
+    [60, '✅ Solid',         '#2979FF','Solid effort. You\'ve got the core down — a few gaps worth filling.'],
+    [40, '📊 Average',       '#9A8F88','Not bad for a first run. Dig into what you missed and come back stronger.'],
+    [0,  '🔬 Needs Work',    '#FF4444','Rough one — but that\'s what the first attempt is for. Review the answers, then run it again.'],
   ];
   const [,label,color,desc] = tiers.find(([t]) => pct >= t);
   document.getElementById('res-grade').textContent = label;
