@@ -504,8 +504,8 @@ button { font-family: var(--f-ui); }
     <div class="sb-section">
       <div class="sb-label">Difficulty</div>
       <div class="chip-row">
-        <div class="chip easy active" id="diff-easy" onclick="selectDiff('easy')">Easy<small>50 Qs</small></div>
-        <div class="chip hard" id="diff-hard" onclick="selectDiff('hard')">Hard<small>70 Qs</small></div>
+        <div class="chip easy active" id="diff-easy" onclick="selectDiff('easy')">Easy<small>65 Qs</small></div>
+        <div class="chip hard" id="diff-hard" onclick="selectDiff('hard')">Hard<small>85 Qs</small></div>
       </div>
     </div>
 
@@ -542,12 +542,12 @@ button { font-family: var(--f-ui); }
       <div class="dash-grid-top">
         <div class="dash-card">
           <div class="dc-label">Easy Questions</div>
-          <div class="dc-val">50</div>
+          <div class="dc-val">65</div>
           <div class="dc-sub">Start here</div>
         </div>
         <div class="dash-card">
           <div class="dc-label">Hard Questions</div>
-          <div class="dc-val">70</div>
+          <div class="dc-val">85</div>
           <div class="dc-sub">For the deep thinkers</div>
         </div>
         <div class="dash-card">
@@ -747,6 +747,22 @@ const EASY_QUESTIONS = [
   { q: "What is multimodal AI?", opts: ["AI using multiple data types", "AI using only text", "AI using only numbers", "AI using only images"], a: 0 },
   { q: "What is a multimodal dataset?", opts: ["Dataset with text, images, and audio", "Dataset with numbers only", "Dataset with text only", "Dataset with images only"], a: 0 },
   { q: "What is data governance?", opts: ["Policies for managing data", "Deleting datasets", "Compressing datasets", "Encrypting datasets"], a: 0 },
+  // ── PERLE-SPECIFIC (EASY) ──────────────────────────────
+  { q: "What is Perle AI's core approach to data annotation?", opts: ["Expert-in-the-loop annotation", "Fully automated labeling only", "Crowdsourced marketplace model", "Self-supervised data generation"], a: 0 },
+  { q: "What does Perle's tagline 'Add IQ to AI' mean?", opts: ["Bringing expert human intelligence into AI training data", "Building smarter hardware chips", "Increasing internet connection speed", "Creating new programming languages"], a: 0 },
+  { q: "Which industries does Perle serve?", opts: ["Healthcare, Legal, Robotics, Finance, and Public Sector", "Gaming, entertainment, and social media only", "Only tech startups", "Retail and fashion only"], a: 0 },
+  { q: "What is Perle's workforce model?", opts: ["100% in-house employees and directly contracted specialists", "Open marketplace of freelancers", "Automated bots with no human oversight", "Outsourced to third-party agencies"], a: 0 },
+  { q: "How many expert annotators does Perle have?", opts: ["25,000+", "500", "1,000", "10,000"], a: 0 },
+  { q: "Across how many countries does Perle operate its expert network?", opts: ["70 countries", "10 countries", "5 countries", "30 countries"], a: 0 },
+  { q: "How many languages does Perle support for data annotation work?", opts: ["27 languages", "5 languages", "100 languages", "3 languages"], a: 0 },
+  { q: "What is Perle's 'Total Transparency' feature designed to provide?", opts: ["Real-time project visibility and traceable audit trails", "Hidden data processing without client access", "Automated annual reports only", "Read-only dashboards with delayed updates"], a: 0 },
+  { q: "Which human feedback framework does Perle explicitly support for model alignment?", opts: ["Reinforcement Learning from Human Feedback (RLHF)", "Unsupervised clustering only", "Random sampling without human review", "Static rule-based filtering"], a: 0 },
+  { q: "What kinds of data does Perle collect for AI training?", opts: ["Text, Image, Audio, and Video", "Only numerical datasets", "Only text documents", "Only satellite imagery"], a: 0 },
+  { q: "What security model does Perle operate under?", opts: ["SOC-style controls, NDA by default, monitored facilities, and audit-ready logs", "No formal security controls", "Public access to all data", "Data stored without encryption"], a: 0 },
+  { q: "How many physicians are part of Perle's specialist network?", opts: ["2,500 physicians", "50 physicians", "200 physicians", "10,000 physicians"], a: 0 },
+  { q: "What is Perle's 'Rapid Iteration' pillar designed to support?", opts: ["Continuous feedback loops and quickly adaptable pipelines", "One-time batch delivery with no revisions", "Offline data processing only", "Manual exports with delayed updates"], a: 0 },
+  { q: "What does Perle's modular platform help AI teams avoid managing themselves?", opts: ["Data labeling, compliance, versioning, bias auditing, and drift detection", "Writing product marketing copy", "Building customer support chatbots", "Designing user interfaces"], a: 0 },
+  { q: "What is WhisperMind, Perle's robotics product?", opts: ["A dataset platform capturing human-level demonstrations with multi-sensor annotations", "A chatbot for customer service automation", "A code generation tool for robotics engineers", "A simulation engine for virtual robot testing"], a: 0 },
 ];
 
 const HARD_QUESTIONS = [
@@ -820,6 +836,22 @@ const HARD_QUESTIONS = [
   { q: "What is the difference between 'structured' and 'unstructured' data in AI training contexts?", opts: ["Structured data is organized in predefined schemas (e.g., tables), while unstructured data has no predefined format (e.g., text, images)", "Structured data is always labeled while unstructured data is unlabeled", "Structured data requires GPUs to process while unstructured data can use CPUs", "Structured data comes from databases and unstructured data comes from the internet"], a: 0 },
   { q: "What is 'synthetic data generation' used for in AI training pipelines?", opts: ["Creating artificial training examples to augment real data, especially for rare classes or privacy-sensitive domains", "Generating fake datasets to test annotation tooling", "Automatically writing code for ML pipelines", "Creating placeholder data while waiting for real annotations"], a: 0 },
   { q: "What role does 'data governance' play in an organization's AI strategy?", opts: ["Establishing policies for data access, quality, privacy, and accountability across the full data lifecycle", "Deciding which cloud provider to use for data storage", "Managing the budget allocated for data annotation projects", "Approving which AI models are allowed to be deployed"], a: 0 },
+  // ── PERLE-SPECIFIC (HARD) ──────────────────────────────
+  { q: "What benchmark improvement did Perle's human-verified data achieve in the DataSeeds.AI white paper?", opts: ["24.09% BLEU-4 score improvement over baseline", "5% accuracy gain on text tasks", "50% reduction in model size", "2x inference speed increase"], a: 0 },
+  { q: "Which vision-language model was fine-tuned on Perle's human-verified DSD image dataset?", opts: ["LLaVA-NEXT", "GPT-4V", "DALL-E 3", "Stable Diffusion XL"], a: 0 },
+  { q: "How many evaluation images were used in Perle's published benchmark accuracy study?", opts: ["10,610 images", "1,000 images", "50,000 images", "100 images"], a: 0 },
+  { q: "What sensor modalities does WhisperMind support for robotics data capture?", opts: ["RGB-D, IMU, and force/torque sensors", "Only RGB cameras", "Only microphones", "GPS and barometric sensors only"], a: 0 },
+  { q: "What training paradigm is WhisperMind's robotics dataset compatible with?", opts: ["Teleop and imitation learning", "Supervised classification only", "Unsupervised clustering", "Large-scale pretraining without human demos"], a: 0 },
+  { q: "What type of data collection system does WhisperMind use?", opts: ["A robot-free, egocentric system for capturing dexterous demonstrations", "A fixed studio camera rig", "A single robotic arm with no sensors", "A crowd-sourced mobile app"], a: 0 },
+  { q: "What does Perle use 'adversarial probes' for in their evaluation pipeline?", opts: ["Testing models against deliberately challenging inputs to find failure modes before release", "Training models faster on easy data", "Compressing dataset size", "Generating synthetic images"], a: 0 },
+  { q: "What does Perle's 'acceptance gates mapped to business KPIs' mean in practice?", opts: ["Models only ship if they pass predefined quality thresholds tied to real business outcomes", "All models deploy automatically without review", "Gates are used for billing purposes only", "KPIs track annotation speed, not model quality"], a: 0 },
+  { q: "What annotation tasks does Perle's text annotation service cover beyond basic labeling?", opts: ["Entity recognition, sentiment, classification, correcting assistant responses, and semantic parsing", "Spell-checking and grammar correction only", "Translation between languages only", "Word frequency counting only"], a: 0 },
+  { q: "In Perle's quality assurance workflow, how are annotation conflicts handled?", opts: ["Expert reviewers resolve class label conflicts with issues flagged instantaneously", "Conflicting labels are deleted automatically", "The client resolves conflicts manually with no support", "Majority vote is applied without expert review"], a: 0 },
+  { q: "What does Perle's WhisperMind JSON annotation data include for robotics objects?", opts: ["Grip force, hand orientation, object weight, grasp type, and manipulation difficulty", "Only object class labels", "Only bounding box coordinates", "Only frame timestamps"], a: 0 },
+  { q: "What is the purpose of Perle's 'collaborative guilds' for expert annotators?", opts: ["Peer support and skill development communities for annotators working in similar domains", "A competitive ranking system that eliminates low performers", "An automated testing platform with no human interaction", "A public leaderboard for freelancers"], a: 0 },
+  { q: "What specific type of evaluation does Perle conduct for bias and safety on model outputs?", opts: ["Expert reviews examining outputs for bias, safety risks, and ethical compliance", "Automated keyword filtering only", "Load testing for infrastructure performance", "A/B testing for UI design"], a: 0 },
+  { q: "In Perle's 'edge case data collection' service, what problem does it solve for AI teams?", opts: ["Capturing rare and difficult scenarios that standard datasets miss, improving model robustness", "Reducing the overall size of training datasets", "Speeding up inference latency on edge hardware", "Automating model deployment pipelines"], a: 0 },
+  { q: "How does Perle describe its approach to language data work?", opts: ["All language work is handled by in-house native speakers with expert QA — no marketplaces, no crowds", "Language tasks are outsourced to translation APIs", "Crowd workers handle all multilingual annotation", "Language support is limited to English and Spanish only"], a: 0 },
 ];
 
 function prepareQuestions(rawList) {
