@@ -1,1 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perle Labs — Intelligence Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────
+   TOKENS
+───────────────────────────────────────── */
+:root {
+  --orange:      #FF6B1A;
+  --orange-2:    #FF8C42;
+  --orange-dim:  #C45010;
+  --red:         #E8321A;
+  --blue:        #2979FF;
+  --blue-2:      #5C9EFF;
 
+  --bg:          #080809;
+  --panel:       #0F0F12;
+  --card:        #141418;
+  --card-2:      #1A1A20;
+  --line:        rgba(255,255,255,0.06);
+  --line-o:      rgba(255,107,26,0.16);
+
+  --t1:          #F0ECE8;
+  --t2:          #9A8F88;
+  --t3:          #4E4740;
+
+  --ok:          #00D68F;
+  --ok-bg:       rgba(0,214,143,0.08);
+  --ok-line:     rgba(0,214,143,0.28);
+  --err:         #FF4444;
+  --err-bg:      rgba(255,68,68,0.08);
+  --err-line:    rgba(255,68,68,0.28);
+
+  --f-ui:   'Inter', sans-serif;
+  --f-head: 'Syne', sans-serif;
+  --f-wm:   'Bebas Neue', sans-serif;
+  --r:      10px;
+  --r2:     16px;
+}
+
+/* ─────────────────────────────────────────
+   BASE
+───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--f-ui);
+  background: var(--bg);
+  color: var(--t1);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+button { font-family: var(--f-ui); }
+
+/* ─────────────────────────────────────────
+   BACKGROUND LAYERS
+───────────────────────────────────────── */
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.4;
+}
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255,107,26,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,107,26,0.018) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+.bg-glow-top {
+  background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(255,107,26,0.06) 0%, transparent 70%);
+}
+.bg-glow-br {
+  background: radial-gradient(circle 400px at 100% 100%, rgba(41,121,255,0.05) 0%, transparent 70%);
+}
+.bg-watermark {
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.bg-watermark span {
+  font-family: var(--f-wm);
+  font-size: clamp(100px, 22vw, 260px);
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  background: linear-gradient(135deg,
+    rgba(255,107,26,0.22) 0%,
+    rgba(232,50,26,0.14) 45%,
+    rgba(41,121,255,0.16) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  -webkit-text-stroke: 1px rgba(255,107,26,0.22);
+  transform: rotate(-6deg);
+  user-select: none;
+}
+
+/* ─────────────────────────────────────────
+   TOPNAV
+───────────────────────────────────────── */
+.topnav {
+  position: relative; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+  height: 64px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(8,8,9,0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  flex-shrink: 0;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 12px;
+}
+.nav-logo {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-logo img { width: 100%; height: 100%; object-fit: contain; }
+.nav-title {
+  font-family: var(--f-head);
+  font-size: 17px; font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--t1);
+}
+.nav-title span { color: var(--orange); }
+.nav-pill {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--blue-2);
+  background: rgba(41,121,255,0.1);
+  border: 1px solid rgba(41,121,255,0.2);
+  border-radius: 20px; padding: 4px 12px;
+}
+.nav-right {
+  display: flex; align-items: center; gap: 16px;
+}
+.nav-stat {
+  font-size: 11px; color: var(--t3);
+  font-weight: 500; letter-spacing: 0.05em;
+}
+.nav-stat strong { color: var(--orange); font-size: 13px; }
+
+/* ─────────────────────────────────────────
+   MAIN LAYOUT — two-column dashboard
+───────────────────────────────────────── */
+.app-body {
+  position: relative; z-index: 10;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  max-height: calc(100vh - 64px);
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+
+.sidebar-section {
+  padding: 20px 20px 8px;
+}
+.sidebar-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--t3); margin-bottom: 10px;
+}
+
+/* Mode cards */
+.mode-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 8px;
+  position: relative; overflow: hidden;
+}
+.mode-card::after {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--orange);
+  opacity: 0; transition: opacity 0.18s;
+}
+.mode-card:hover { border-color: var(--line-o); background: var(--card-2); }
+.mode-card.active { border-color: var(--line-o); background: var(--card-2); }
+.mode-card.active::after { opacity: 1; }
+.mode-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: rgba(255,107,26,0.08);
+  border: 1px solid rgba(255,107,26,0.14);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.mode-info { flex: 1; min-width: 0; }
+.mode-name { font-size: 13px; font-weight: 600; color: var(--t1); margin-bottom: 2px; }
+.mode-desc { font-size: 11px; color: var(--t3); line-height: 1.4; }
+.mode-check {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: transparent; transition: all 0.18s;
+  flex-shrink: 0;
+}
+.mode-card.active .mode-check {
+  background: var(--orange); border-color: var(--orange); color: #fff;
+}
+
+.sidebar-divider { height: 1px; background: var(--line); margin: 4px 0; }
+
+/* Q count chips */
+.count-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.count-chip {
+  flex: 1; min-width: 60px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer; transition: all 0.18s;
+  font-size: 16px; font-weight: 700;
+  color: var(--t2);
+  font-family: var(--f-head);
+}
+.count-chip small {
+  display: block; font-family: var(--f-ui);
+  font-size: 10px; font-weight: 500;
+  color: var(--t3); margin-top: 2px;
+}
+.count-chip:hover { border-color: var(--line-o); color: var(--t1); }
+.count-chip.active {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(255,107,26,0.07);
+}
+
+/* Start button */
+.btn-launch {
+  margin: 16px 20px 20px;
+  width: calc(100% - 40px);
+  padding: 14px;
+  background: linear-gradient(135deg, var(--orange) 0%, var(--red) 100%);
+  color: #fff; border: none; border-radius: var(--r);
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(255,107,26,0.22);
+  position: relative; overflow: hidden;
+}
+.btn-launch::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  transform: translateX(-100%); transition: transform 0.5s;
+}
+.btn-launch:hover { box-shadow: 0 6px 28px rgba(255,107,26,0.35); transform: translateY(-1px); }
+.btn-launch:hover::before { transform: translateX(100%); }
+
+/* Live stats panel in sidebar */
+.live-stats { padding: 0 20px 20px; margin-top: 4px; }
+.lstat-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.lstat-row:last-child { border-bottom: none; }
+.lstat-label { font-size: 11px; color: var(--t3); font-weight: 500; }
+.lstat-val { font-size: 13px; font-weight: 700; color: var(--t1); }
+.lstat-val.orange { color: var(--orange); }
+.lstat-val.blue   { color: var(--blue-2); }
+.lstat-val.green  { color: var(--ok); }
+
+/* ─── MAIN CONTENT AREA ─── */
+.content {
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,107,26,0.15) transparent;
+}
+.content::-webkit-scrollbar { width: 4px; }
+.content::-webkit-scrollbar-thumb { background: rgba(255,107,26,0.2); border-radius: 2px; }
+
+/* ─────────────────────────────────────────
+   SCREENS
+───────────────────────────────────────── */
+.screen { display: none; flex: 1; }
+.screen.active {
+  display: flex; flex-direction: column;
+  animation: fadeIn 0.35s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══ WELCOME / HOME SCREEN ═══ */
+#screen-home {
+  flex: 1; align-items: center; justify-content: center;
+  padding: 40px 32px;
+}
+.home-inner { max-width: 560px; width: 100%; }
+.home-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--orange);
+  display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+}
+.home-eyebrow::before {
+  content: ''; display: block; width: 24px; height: 1px; background: var(--orange); opacity: 0.5;
+}
+.home-h1 {
+  font-family: var(--f-head);
+  font-size: clamp(30px, 4.5vw, 48px);
+  font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.02em; margin-bottom: 16px;
+  color: var(--t1);
+}
+.home-h1 em { color: var(--orange); font-style: normal; }
+.home-p {
+  font-size: 15px; color: var(--t2); line-height: 1.7; margin-bottom: 36px;
+}
+.home-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+.home-tag {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  padding: 5px 12px; border-radius: 20px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line);
+  color: var(--t2);
+}
+.home-tag.hi { border-color: rgba(255,107,26,0.25); color: var(--orange-2); background: rgba(255,107,26,0.07); }
+
+.home-stats-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px;
+}
+.hstat {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px;
+  text-align: center;
+}
+.hstat-num {
+  font-family: var(--f-head); font-size: 24px; font-weight: 800;
+  color: var(--orange); display: block; margin-bottom: 4px;
+}
+.hstat-lbl { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+
+/* ═══ QUIZ SCREEN ═══ */
+#screen-quiz { padding: 0; }
+.quiz-content { flex: 1; padding: 28px 32px; display: flex; flex-direction: column; gap: 20px; }
+
+/* Progress header bar */
+.qprogress-bar {
+  display: flex; align-items: center; gap: 16px;
+}
+.qprogress-track {
+  flex: 1; height: 4px; background: var(--card-2); border-radius: 2px; overflow: hidden;
+}
+.qprogress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--orange-dim), var(--orange));
+  border-radius: 2px;
+  transition: width 0.55s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 0 6px rgba(255,107,26,0.3);
+}
+.qprogress-label {
+  font-size: 11px; font-weight: 700; color: var(--t3);
+  font-family: var(--f-head); letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* Two-col quiz layout */
+.quiz-cols {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 20px;
+  flex: 1;
+}
+@media (max-width: 860px) {
+  .quiz-cols { grid-template-columns: 1fr; }
+  .quiz-right { order: -1; }
+}
+
+/* Question card */
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  padding: 28px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.q-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--orange) 0%, var(--blue) 60%, transparent 100%);
+}
+.q-header {
+  display: flex; align-items: center; gap: 12px;
+}
+.q-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--blue-2);
+  background: rgba(41,121,255,0.1);
+  border: 1px solid rgba(41,121,255,0.18);
+  border-radius: 6px; padding: 3px 10px;
+}
+.q-category {
+  font-size: 11px; color: var(--t3); font-weight: 500;
+}
+.q-text {
+  font-size: clamp(15px, 2vw, 18px); font-weight: 500;
+  line-height: 1.6; color: var(--t1);
+}
+.options-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+@media (max-width: 600px) { .options-grid { grid-template-columns: 1fr; } }
+
+.opt-btn {
+  background: var(--card-2); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 13px 16px;
+  cursor: pointer; display: flex; align-items: flex-start; gap: 12px;
+  font-size: 13.5px; font-weight: 500; color: var(--t2);
+  transition: all 0.16s ease; text-align: left; line-height: 1.45;
+  position: relative; overflow: hidden;
+}
+.opt-btn:hover:not(:disabled) {
+  border-color: var(--line-o); color: var(--t1);
+  background: rgba(255,107,26,0.05);
+  transform: translateX(3px);
+}
+.opt-btn:disabled { cursor: default; }
+.opt-key {
+  width: 24px; height: 24px; flex-shrink: 0;
+  border-radius: 6px;
+  background: rgba(255,107,26,0.08);
+  border: 1px solid rgba(255,107,26,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800;
+  color: var(--orange); font-family: var(--f-head); margin-top: 1px;
+  transition: all 0.16s;
+}
+.opt-btn.correct {
+  border-color: var(--ok-line); background: var(--ok-bg); color: var(--ok);
+  box-shadow: 0 0 0 1px var(--ok-line);
+}
+.opt-btn.correct .opt-key { background: rgba(0,214,143,0.15); border-color: var(--ok); color: var(--ok); }
+.opt-btn.wrong {
+  border-color: var(--err-line); background: var(--err-bg); color: var(--err);
+  box-shadow: 0 0 0 1px var(--err-line);
+}
+.opt-btn.wrong .opt-key { background: rgba(255,68,68,0.15); border-color: var(--err); color: var(--err); }
+
+/* Quiz right panel — timer + streak */
+.quiz-right {
+  display: flex; flex-direction: column; gap: 14px;
+}
+.timer-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  padding: 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.timer-label-top {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--t3);
+}
+.timer-ring-wrap {
+  position: relative; width: 100px; height: 100px;
+}
+.timer-ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--card-2); stroke-width: 5; }
+.ring-prog {
+  fill: none; stroke: var(--orange); stroke-width: 5; stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.3s;
+  filter: drop-shadow(0 0 4px rgba(255,107,26,0.4));
+}
+.ring-prog.urgent { stroke: var(--err); filter: drop-shadow(0 0 5px rgba(255,68,68,0.5)); }
+.timer-num {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-head); font-size: 28px; font-weight: 800;
+  color: var(--orange); transition: color 0.3s;
+}
+.timer-num.urgent { color: var(--err); }
+.timer-sublabel { font-size: 10px; color: var(--t3); letter-spacing: 0.12em; }
+
+.streak-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  padding: 16px 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.streak-icon { font-size: 22px; }
+.streak-num {
+  font-family: var(--f-head); font-size: 30px; font-weight: 800;
+  color: var(--orange); line-height: 1;
+}
+.streak-sub { font-size: 10px; color: var(--t3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+
+.mode-badge-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.mode-badge-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--orange);
+  box-shadow: 0 0 6px var(--orange); animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+}
+.mode-badge-text { font-size: 12px; font-weight: 600; color: var(--t1); }
+.mode-badge-sub  { font-size: 10px; color: var(--t3); }
+
+/* Timeout banner */
+.timeout-banner {
+  background: var(--err-bg); border: 1px solid var(--err-line);
+  border-radius: var(--r); padding: 11px 16px;
+  font-size: 12px; font-weight: 600; color: var(--err);
+  display: none; text-align: center; margin-top: -8px;
+}
+.timeout-banner.show { display: block; }
+
+/* Next button */
+.btn-next-wrap { padding: 0 32px 24px; }
+.btn-next {
+  width: 100%; padding: 14px;
+  background: transparent;
+  border: 1px solid var(--line); border-radius: var(--r);
+  font-size: 12px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--t3);
+  cursor: pointer; transition: all 0.18s;
+}
+.btn-next:hover:not(:disabled) { border-color: var(--line-o); color: var(--orange); }
+.btn-next:disabled { opacity: 0.3; cursor: default; }
+.btn-next.ready {
+  background: linear-gradient(135deg, var(--orange) 0%, var(--red) 100%);
+  border-color: var(--orange); color: #fff;
+  box-shadow: 0 4px 18px rgba(255,107,26,0.25);
+}
+.btn-next.ready:hover { box-shadow: 0 6px 26px rgba(255,107,26,0.38); transform: translateY(-1px); }
+
+/* ═══ RESULTS SCREEN ═══ */
+#screen-results { padding: 0; }
+.results-inner { flex: 1; padding: 28px 32px; }
+
+/* Top score strip */
+.res-top {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px; align-items: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  padding: 28px 32px; margin-bottom: 20px;
+  position: relative; overflow: hidden;
+}
+.res-top::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--orange), var(--red), var(--blue));
+}
+.res-score-big {
+  text-align: center;
+}
+.res-fraction {
+  font-family: var(--f-head);
+  font-size: clamp(48px, 8vw, 80px); font-weight: 800;
+  line-height: 1; color: var(--orange);
+  text-shadow: 0 0 30px rgba(255,107,26,0.2);
+}
+.res-fraction span { color: var(--t3); font-size: 0.5em; }
+.res-pct {
+  font-size: 14px; color: var(--t2); font-weight: 500; margin-top: 4px;
+}
+.res-info { }
+.res-mission { font-size: 11px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin-bottom: 8px; }
+.res-grade {
+  font-family: var(--f-head); font-size: clamp(20px, 3vw, 28px);
+  font-weight: 800; line-height: 1.2; margin-bottom: 10px;
+}
+.res-desc { font-size: 13px; color: var(--t2); line-height: 1.6; }
+
+/* Stats grid */
+.res-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;
+}
+@media (max-width: 640px) { .res-stats { grid-template-columns: repeat(2, 1fr); } }
+.res-stat {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.res-stat::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--blue-2), transparent); opacity: 0.4;
+}
+.res-stat-val {
+  font-family: var(--f-head); font-size: 22px; font-weight: 800;
+  color: var(--orange); display: block; margin-bottom: 5px;
+}
+.res-stat-key {
+  font-size: 10px; color: var(--t3); text-transform: uppercase;
+  letter-spacing: 0.12em; font-weight: 600;
+}
+
+/* Review table */
+.review-table-wrap {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r2); overflow: hidden;
+  margin-bottom: 20px;
+}
+.review-table-head {
+  display: grid; grid-template-columns: 32px 1fr 220px 80px;
+  padding: 10px 16px;
+  background: var(--card-2);
+  border-bottom: 1px solid var(--line);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--t3);
+  gap: 12px;
+}
+.review-table-body { max-height: 320px; overflow-y: auto; }
+.review-row {
+  display: grid; grid-template-columns: 32px 1fr 220px 80px;
+  padding: 12px 16px; gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  align-items: start;
+  transition: background 0.14s;
+}
+.review-row:hover { background: rgba(255,255,255,0.02); }
+.review-row:last-child { border-bottom: none; }
+.rr-dot {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; margin-top: 1px;
+}
+.rr-dot.c { background: var(--ok-bg); color: var(--ok); border: 1px solid var(--ok-line); }
+.rr-dot.w { background: var(--err-bg); color: var(--err); border: 1px solid var(--err-line); }
+.rr-q { font-size: 13px; font-weight: 500; color: var(--t1); line-height: 1.45; }
+.rr-ans { font-size: 12px; color: var(--t2); line-height: 1.45; }
+.rr-status {
+  font-size: 11px; font-weight: 700; text-align: right;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.rr-status.c { color: var(--ok); }
+.rr-status.w { color: var(--err); }
+
+/* Result action buttons */
+.res-btns { display: flex; gap: 12px; }
+.btn-retry2 {
+  flex: 1; max-width: 220px; padding: 14px;
+  background: linear-gradient(135deg, var(--orange), var(--red));
+  color: #fff; border: none; border-radius: var(--r);
+  font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.18s;
+  box-shadow: 0 4px 18px rgba(255,107,26,0.22);
+}
+.btn-retry2:hover { box-shadow: 0 6px 26px rgba(255,107,26,0.38); transform: translateY(-1px); }
+.btn-back2 {
+  padding: 14px 24px; background: transparent;
+  border: 1px solid var(--line); border-radius: var(--r);
+  color: var(--t3); font-size: 12px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.18s;
+}
+.btn-back2:hover { border-color: var(--line-o); color: var(--orange); }
+
+/* ─────────────────────────────────────────
+   RESPONSIVE — collapse sidebar on small
+───────────────────────────────────────── */
+@media (max-width: 720px) {
+  .app-body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; max-height: none; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--line); max-height: 320px; }
+  .topnav { padding: 0 16px; }
+  .quiz-content { padding: 20px 16px; }
+  .res-top { grid-template-columns: 1fr; gap: 16px; }
+  .review-table-head, .review-row { grid-template-columns: 28px 1fr 80px; }
+  .review-table-head > *:nth-child(3),
+  .review-row > *:nth-child(3) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- BACKGROUND LAYERS -->
+<div class="bg-layer bg-noise"></div>
+<div class="bg-layer bg-grid"></div>
+<div class="bg-layer bg-glow-top"></div>
+<div class="bg-layer bg-glow-br"></div>
+<div class="bg-layer bg-watermark"><span>PERLE LABS</span></div>
+
+<!-- ════════════════════════════════
+     TOP NAV
+════════════════════════════════ -->
+<nav class="topnav">
+  <div class="nav-brand">
+    <div class="nav-logo">
+      <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAGQAZADASIAAhEBAxEB/8QAHQABAAAHAQEAAAAAAAAAAAAAAAIEBQYHCAkDAf/EAEMQAAIBAwIDBgMFBQUIAgMAAAABAgMEBQYRBxIhCBMxQVFhInGBFDJCkaEjYoKSsRUkUnLCFhczQ1Njk8Els6PD0f/EABcBAQEBAQAAAAAAAAAAAAAAAAACAQP/xAAfEQEBAAIDAAMBAQAAAAAAAAAAAQIREiExEyJBYQP/2gAMAwEAAhEDEQA/ANMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJ6+xV9Z2FnkKtFuzvIt0LiPWEmntKG/lKL8Yvr4PwabkTKfADVGBtslX0RrmhSudJ52cY1e9e32S58KdeMvGH+GTTXRpt7RAxYDLHHTgln+G91UyFDmyenKk/2F7BbypJv4Y1UvB+XMvhfTwb5TE4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM3cBuA+R1lBal1XKphdJ0Id9OrUfJUuYLq+Tf7sNvxvx8t+rQYio4XJVcBXz32aUMbRqxofaJ/DGpVfXu4P8UuXeTS8Et34renF/cbdZWGqtTQstOWsLDSmHg7XDWlODhGNPfeVVp9eecvibfXbl36pssEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3f7JfEK217oKro3Ufd3OQxdNUWq3x/aLdrljJqX3tusZfR/iLM45dmKcK1fNcPlGDk+eeJqT2g/XuZvw/yy6dejS2ia9cLtY3+hNbY/Udi5NUJ8txST2Vai38cH814ejSfkdKtMZew1DgbTIWtaNxZ3dGNajUXnGS5k/qReqqduW2Rsb3G31axyNpXs7ujLkq0K9NwnB+ji+qZLnR/i7wf0pr6z5cxY8t3GO1C/t9oV6Xtzfij+7Ldemz6mnHFjgPrPQsq15Qt5ZvDQXN9stKb5qcfWpT6uHz6x9zZlKlicAFAAAAAAAAAAAAAAAAAAAAAXV7IAT+Bw+Uz2VoYrDWFxf3teXLTo0YOUn7+yXm30XmZd4RdnXVusJ0shn4VdPYeXxKVan/eay38IU3s4p/4pbLqmlI3I4XcMdMaFxKscBjoW6lFd/cT2lXuGvOc31fyW0Vv0SJuQwnwK7Mdji6lDN67+z5K9ilOGPS5rag/334VZe33fHpLoyHtqcS44fB0uHmBrd3Xv6fPfzg9nG38FDp5zaf8KfTaSNgOImqcbpHSWRzd9UVKysaLqTe+zqNdIxj+83tFe8kcztXZ7Iao1NkNQZSop3l9WdWpt4R38Ir0jFJRS9EjJ3229KUAC2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbZ9h3iDKrbXegMjX3lbp3WO5n402/wBpTXyk+ZLx+KXkjUwreg9R3mkdY4vUlju61hcRq8ie3eQ8Jwb9JRcov2Zlm4OptnWjNd1U6+jPK9sIS+KK+RQ9N5i0zOGsMzj63e2l3QhXoz225oyjzJ7eTaLntK0akFFvc5yqsYI4pdnzROsHWu6No8Hlam8vtdlFKM5des6f3ZdXu2tpP1NYOIfZ/wCIWkVUuaVhHOY+HX7Rjk5yS36OVPbnXvsml6nRa5tozTaRTa9o15G70acpJJxk4yTTT2afkfDpBr7hVofWinPP6ftq11JbK7pLuq69Pjjs3t6S3RgPWfZLrwU62kNTRqPpy22Sp7P3/awX+j6lTKM01bBkbVPBDifp5zlc6Uu7yjGXKq1htcqXulDeSXzSLAv7K8sLmdrfWle1rwe0qVam4Ti/dPqimPAAAAAAAAAE/h8LmMzXdDD4m/yNVLdwtbedWSXyimZG0x2fOKed7uf+z6xlCot1VyFeNLb5w6zX8oGKiOhSq160KNClOrVnJRhCEXKUm/BJLxZthozsl2NLuq+rtTVriWyc7bH01Tin5rvJbuS+UUZ60Nw70boykoaa09Z2NRx5JV4xc6016SqS3k17b7E8o3TTnh12cNf6odK5ylvDTmPns3UvU3Wcfaivi39pcptHwq4E6J0NOjd2mPeQytPr/aF6lOpGXrBfdp/NLf3ZlW3tm9uhU7ehFJdCbbRLWdjCCTaQv68YQdOD2XnsTN3WVODjHoWRxG1PZ6U0hldSX7XcWNvKryuXLzyXSMF7yk4xXuybfxUjV7tvcQJXuXtdA4+s+5tOW6yPK/vVGv2dN/KL5v44/wCE1lJ7UGVvc7nL7M5Gp3l5fXE7itJdE5Sbb2XkuvReSJE6yaiKAA0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAbh9iPW6yWl7vRV5W3usW3WtVJ/et5y3aXm+Wbe/tOK8jZayrOMttzmzwU1dPRHErEZ11HG1jV7m8W+ydCfwzb9dt+ZL1ijo1SqL4akWtn13RyzmlRctCqpRW7Ip01JeBTLStul1KhSq9PESjxrWye/Qk6lr49CrOUWjznGL8AKNOg0/AlrzH295bzt7q2o3FGa5Z06sFKMl7plddKL8j53K9Bo2xdluDnDLJU3C50PhoJ+Lt7dUH+dPlZQavZy4R1PDS06fvHIXH9HUM2Sox38EfFRi35BrBUuzLwpcm1ir+K9Ff1f/6R0uzPwnh97C3lT/Nf1f8A1IzmreL9CJ28djd1LCtv2deEVGSl/sm6jX/Uv7lr8u8LkxnCjhzjeR2mh8DGVN7xlUsoVJJ+u8k2ZBlRS8iB00vIbUkaduoRUYRUIroopbJESpMm+REcKfXwJEtCh7EzQodV0PenSXQmaVNehumbKFJLboelaapxaXiRy2hH0KdeVW34i3RJtLXdVyk1uak9ujXDX9maCsa3SSV9kOV+K3apQf1UpNP0ps2oyl5b2NjcX13VjRt7enKrVqT8IRit3L8kcy+IepbnWGt8vqW75lO/uZVIQk9+7p+FOH8MFGP0GEMlAAB1SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAdAuzVqhaq4PYe4nUU7qyp/Ybnru1Olsk37uHJL+I5+m0HYP1By3uodK1araqQhfUKfo1+zqP9aX5E5TpsbaWk9mkVOlPoij0nyzKnbvdI5RVTamyNS6HiiPrsUxE2ec6mxDUnsiUrVer2YtJHvOts/Egdwl5khVuUt92SVa/jHfZ/kRyVxVxXS9SNXKfmWu8hLfomRwyEk+u45HFcrqp+ZDzJlDpZGLfVk7Quoy2+I2ZbNKnBJntCPsSlCqnt1J2k09vA2MetOPUmIJJbkFNeexFUeyZrHhdz2TRS68t2ybupttkjN7sxrC3bA1bPTPCC7s7afLd5qosfDbxjTkm6r29OSLj85o0LNie3ZqOOQ4hYvTlGalTxVm6tRecatZ7tP8AghTf8TNdjpjOk0ABTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADJXZjz3+z/GvT9adWVOheVXY1UvxKqnGKftz8j+hjUm8Nf18VmLLKW0uWvZ3FOvSfpKElJfqhR1Emtp7rz6k/ZS3SRSrOvC6sLe6pSUoVacZRlF7pprdFRsH1SOK1Tit0hPoj0pJcu553L2TNYkrme268ClXlyobpPd+hNZGvyJpdd/BGv8A2keM1PQtB4DATp19S14KUpSipQsabXSTT6Ob8Yx8l1fTZSmS5XUX4vHifxP0toS25s/kf75OHNRsLdc9eovJ8vhFdH8Utk/Lc1w1d2mtW386lPTuMsMNQf3alRfaKy+stofTlfzMI5S/vcpkK+QyV3Wu7u4m51a1ablOcn5tsljpjhI53K1e+T4tcSsjW7241nl4S9Lat3C/KnyoixPF7iXjKrq22s8rUk1ttdVFcL8qqkixgXpjP2ju07qaxnCjqfEWWXoLpKrQ/u9b5vbeD+SjH5mx/DjiLpfXFm7jTmUjVqwipVrSquS4o7/4oPy67cy3Xo2c8idweVyWDy1vlcReVrK9tp89KtSltKL/APafg0+jTaZFwlVMrHT2yu9+jezK1aVubbqa/dnri5bcQ8W8fke7ttSWdPmuKcVyxuYLZd7BeXVrdeTe66PpmzG3HVJvqctXG6qurF1UesSGu9kyCwnvHxIrnpuV+MU+5e7ZKyeyb9FuTFw+rLf1xl3gNGZvOqHO8fj690o77c3dwlPb9AOdnGzOvUnFnU2YVZVqdXIVKdCa8JUab7um/wCSESzj6222292z4dkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOjfAy8jf8GdJ11NzaxdCk23v1hBRf6xL8sntJGJOyfcO44Aafbe8qbuIflcVNv02MsWj6o431av2//D3JS9lsn7E3aP8AZFOykuWD28WL4T1j3jBrK20PoXJ6nuFCdS3hyWtKT/41eT2hHbzW/V/upvyOdeayd9mctdZXJ3M7m9u6sqterPxlJvdv2+XkbH9u/UNSWY09pKlOSpUbeWQrpPpKc5OnDdesVCf85rIXhNRNoAC2AAAAACp6VzuS0zqKxz2Irdze2VVVaUmt0/WMl5xa3TXmm0dEeHep7PVmksXqawXLRvqKnKnvv3c10nDf92Skt/Pbc5tm1HYb1FOrYag0pXq7qjKF9axfkpfBU+m6p/myM5uKxum4GJq7qJPXPUomEqNwXXwK1V6wT9iJ3G31TLn7zMVdqa/qY/gFqitSm4zqUaVBbecalanTl+kmZVu/FmBu23eStuCEqKeyusnb0X7r4qn+gT0rRYAHZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADensazlLgZaJvpG8uEvlz7/APszTbfeRhvse0XS4D42p/1rm5mvpVlH/SZns11Rxy9XFbst3SfyKflV4L3KhZvaGxJ5WD2328HuL4T1z57YVxUrcfc3SnJyjb0bWnDfyTt6ctvzkzEJmbtm2FWz47ZC5qR2jfWdtcU36xVNU9/zpswydZ4gABoAAAAABm3sW3bt+MkqHXa7xlek/o4T/wBBhIzn2J7L7TxduLpp8tpiq009vxSnTgl+Un+Rl8bPW8GGnytL3K8pbwKBik90yvUk3T3OOKqkbt9Wa69vBv8A3Q4peuepf/RcGxV2urNd+3fFy4QYyS8I52i3/wCCuisfStJQAdUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOgfZfsp2PAXTNKpFqVSlVrdfSdac1+kkZUs14FscO8VPB8PdPYarKMqlljaFGbXnKMIp/qi6bReBxq1UtXs0iO/pc9Jteh40ns0TsWqlLl8zfYNPu3npKrWsMFrS2ouX2Vyx97NdWoyfPSb9Fzd4t/WSNSTqRxA0xj9U6ZyenMrT5rLIUJUajS3cH4xmv3oySkvdJnNjiLpDL6G1ffabzNJxr2033dRRahXpt/DUh6xkvy6p9Uy8L1pNmlvAApgAAAAAG4XYj0nVx2i8lqm5p7TzNaNK23XXuaTknJfObkv4NzWnhPobJcQdZ2mAx6lClJ893c8u8bein8U37+SXnJpeZ0U0zh7HD4myxGMoKhZWVGFChTXXljFJLd+b6dWTnelYz9VnGUmkt0VylFd34FPtIcqRU6C+A5xtU29j1Zg7tl2KuuA+TrtdbK7tq6+tVU/8A9hni+j4sxj2hcXHL8FNX2c3soYypdL3dFd6v1gioVzgAB0QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABXuHeIjnte4DCzhKdO9yNChUUfHklUSk/pHdlBM2djDAf2xxnoZCfMqWItKt1vy7pzku7jF/zyl/CZRvHyqHLCK2UUkkidtFsl0JVLebfqydoLljv4HJb35tmTFCrs/EkZz6nyFXZhulRuqaqwbRibjrwlw3EzBxtrx/Ysrap/YchGG8qbfjCa/FB+nl4r3ynSr7rZsjnCFVdUtx/Yn+Vy44iaE1PoHNPF6lxtS1m2+5rL4qNxFfipz8Guq6eK3W6T6FsnVDU2mMTqDF1MZmsZaZKym93RuaSnHf1W6ez/eXUwDrjsnaRyNw6+m8tf6ebb3ozh9ror2ipSjNfNzZ0mUZppaDYnIdkrW1OtJWOo9PV6e/wyrSrUpP6KnJfqRY3slaxqVorI6mwFvS/FK376tJfSUIf1N3DVa6F3cM+HeqOIOXVjp+wnOjCSVxeVFy0Ldespeu3XlW7fkjaXRPZX0Xia6uNQ399qKpHwpNfZqD+cYScn/Pt7GdsJhcdiMfSx+Lsbaws6K2p29vTVOEN/HZJJE3ORsxWhwe4a4Th1ptYnFKVa4rNTvb2pHapczS6Nr8MV1SiuiT8223kS2oqKXQUoRij3g0uhzttvavOo9qSJ2g+mxKU2iaotbI2Med7DeLZQ8pZ0L2yuLK6pRq29xSnSqwl4TjJbSX5MuG4jvB/IpdxHx9Uaxyly9jcYvLXmMu4OFxaV50KsX4xnCTi1+aZKmUO1NgHp/jjqCnGnKNC/qxyFKT/H3q5pte3ed4voYvOqQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANyOwlp37FoXNalq05RqZK8VCk2ukqVJeK/inNfwmnNKE6tSNOnCU5zajGMVu234JHS3hZpqnpDhzgtOwhCNS1tId/wAi2UqrXNUf1k5P6k5Ni5qMd5E4/hhseVvFRju0fK9TbdHO9KnaCpPqQKezPKUt2fE+pKk1Co/UmKVZrzJGG56p7GwVOFwmviW56KdKS67blJdbbzIXd8vmNs0q06NB+USXqU6K36Ip7vX6nm7xvxY3DSdlyJ9EiFyXl0JRV0/MiVVepm2pjnIozJXnXqRKfuUJ+lU6onaFRPbqUaFTZ+JM0K/VdTNs0rTalD1Kdcx2kyZtqqaSbIbyn05l4FJafdv7TbT05qylS6LvMdcT/wDyUl/9xqedH+0dpSOsOEOdxsKTqXVGg7u12jvLvqXxxUfeWzh/EznAXj4ygAKYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADK/ZT0i9WcY8Y6tLns8V/8hcb77bwa7tf+Rwe3mkzoFGPNU38NuhgzsWaKeneGctQXVDkv89UVdN/eVvHpSX1+Ofupr0M8TapQ9yMr22Ias1ThsmSFWo5MirVHNvr0IEkluzne1yaEtz0Wy8Tzc1FdDylUfrsjGpl1YpHnO48dmWTq/idoLSkp085qexoV4bc1vTm6tZb+HwQ3kvyRi3UXao0bZ95DCYXK5OpH7s6ijQpz+rbkv5TdWs3GwU60pep5SlL3NQMx2q9ZV7hvFYDC2VDyjX7ytNfxKUF+hamQ7Q3Fa6qOVPUFC0i392hY0dl/NFv9TfjrOUbzty9z43JepoZPjvxYn46vrfS0t1/SmIcd+LEXutX1n87S3f8AWmPjOTfPnkvUiVaS8TRbH9oTita1VOpqCldxT+5XsaOz/lin+pdmG7VOrqFZPL6fw19S9KDqUJfm3NfoPjpyjcGNx6s9oVk/M11wHaj0ded3DM4TK4ypJ7SnT5a9OP1TjL8omTNJ8T9BaoqRo4XVFjWuJvaFCrJ0asn6KE1GT+iZPGxu4yJGon4MjhUafiUqFaUfdexM0rhSWzfUzbVZtbhprqVWlONWlt4stqnV8GmVKyutmk2VKyx6XdPZyT8/6nNPjvpB6I4qZrB06fJZ999os/h2XcVPiil68u7hv6xZ02rxVWnzR8fY1V7dmiHfaex+ubSmu+xkla3uy6uhOXwSf+Wb22/7r9Dpje0Vp0AC2AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABd3B7R1fXfEXE6cpwm6Faqp3c49O7oR61Hv5PZbLf8AE0vMtE3Z7E3D5YDRdXWWStuTIZlb27nH4qdon8Py538XulBmW6GwGPtLbGY6haW1GnQt7emqdKnCO0YRS2SS9EiVuK7nJ7Pofby5dSbUXtFFC1HqDD6exlXJ5jIW9jaUvv1q01GKb8Et/F+y6nG3bpJpVnJJbspOo9RYbT9hK/zeUtcfaxezqV6qgm/Rb+L9ka2cTu1BJzq2Gg7FSX3f7RvIP84Uun5y/lNdNT6jzmp8nLJZ/KXOQupdOetPdRXpFeEV7JJFTBlybRa/7UuGsnVtdG4mrlKq6K7ut6VFe8Ybc0l8+UwJrbi9xC1c6kMnqK5o2s919ks33FJRf4Wo9ZL/ADNlhg6TGROwAGsAAAAAAAAAABeOjuJ2u9JckMLqS8p28VsratJVqKXooT3UfmtmZ00D2orWtOnaa1wv2Vvo72w3lDf1lTb5kvk5fI1aBlxlbt0m0lqrB6lx6v8AT2XtclbbpOVGom4N+UovrF+0kmXHQuE2tns/Q5jYDNZfAZOnksJkbnH3lP7tWhUcXt6PbxT80+j8zYzhZ2m595Sx3EC0i4t8qydpT2a96lNf1h/Kznf89eKmTcTH3i3UZPoyR1tgbHUOnb/DZCn3lnf286FVLx5ZLbdPykt90/VFA0zqHFZ7G08nhclbZC0qfdq0Kikvk/R+3kXZjbyFaDoVWk30TZkrbP1y51tp690nq3J6cyK/vOPuJUZS22U0vuzS9JR2kvZooxtl26+Hkoq04gWFF70uWzySjHxi3+yqv5N8jb9YGpp1l25gANAAAAAAAAAAAAAAAAAAAAAAAAAAAACKEJVJxhCLlKT2jFLdt+iAvzgLoC44i8RrHCckv7PpNXGRqJ7ctCLW638nJtRX+bfyZ0MrTt7K0pWFnCFG3oQUIxgtoxilsooxDwV0xh+CvCqd/qK6oWOUvoRucrcVml3G6+Cgn5uO+23XeTlt4pGBON/H3L6snXwul518XhN+WVZPluLpe7X3IP8Awrq/N9Wjnft4qdMy8Y+0FgNIuvicCqeazMd4yUJfsLeX/ckvvP8Adj6bNpmpWuNZ6l1pk3f6iyla8mm+6pN7UqKflCC6R/q/Nst4FzGRluwAGsAAAAAAAAAAAAAAAAAAAAAFw6F1pqTRWVWR05k6tpUe3e0/vUqy9JwfR/1Xk0bf8FuPen9aO3xeW5MPnpbRVGUv2NeX/bk/P919fRs0fPsZSjJSi3GSe6aezTJuMrZdOpWXscdqzTl5gMtRhXo3dCdGpFvbvISWzSfk0uqfkzm1xQ0dkNB62yGmsipSlbT3oVnHZV6T6wmvmvH0aa8jK3BftF5nTc6GK1fKtlMXHaNO7j1ubf3b/wCZH59fd7bGXu0Zo/E8YOG9HWmka1C+y+MoSrUp2/xfbLfxnTW3XmWzaXipJx2TkzJ9eq29tJQAWkAAAAAAAAAAAAAAAAAAAAAAAAAAAynwMhp/S9z/ALyNYLns8fUcMTZxSlUu7tJPmjF/hppp7vZczj16NGLD0qVq1WFKFSrOcaUeSnGUm1CO7lsvRbyb29W/UC8OKvEnUfETMO7y9d07OnNytbKnJ93RT8/3pesn9NlslZYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAL34TcTtT8N8urvC3PeWdSalc2NV70qy9f3ZbfiX13XQsgAZJ4zWenM1cviBomHdYjJVdr+wltGpjryW8nBxX/Lns5Ra3W6kumyRjY9KVatShVhSq1IQrR5KsYyaU47qWz9VvFPZ+aXoeYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/2Q==" alt="Perle Labs"/>
+    </div>
+    <span class="nav-title">PERLE <span>LABS</span></span>
+    <span class="nav-pill">Quiz Platform</span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-stat">Questions <strong id="nav-qcount">80</strong></span>
+    <span class="nav-stat">Session <strong id="nav-pts">0 pts</strong></span>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════
+     APP BODY (sidebar + content)
+════════════════════════════════ -->
+<div class="app-body">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Game Mode</div>
+      <div class="mode-card active" id="mode-timer" onclick="selectMode('timer')">
+        <div class="mode-icon">⏱</div>
+        <div class="mode-info">
+          <div class="mode-name">Timer Mode</div>
+          <div class="mode-desc">20s per question</div>
+        </div>
+        <div class="mode-check">✓</div>
+      </div>
+      <div class="mode-card" id="mode-free" onclick="selectMode('free')">
+        <div class="mode-icon">🧠</div>
+        <div class="mode-info">
+          <div class="mode-name">Free Play</div>
+          <div class="mode-desc">No time pressure</div>
+        </div>
+        <div class="mode-check">✓</div>
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Question Count</div>
+      <div class="count-chips">
+        <div class="count-chip active" id="cnt-10" onclick="selectCount(10)">10<small>Qs</small></div>
+        <div class="count-chip" id="cnt-25" onclick="selectCount(25)">25<small>Qs</small></div>
+        <div class="count-chip" id="cnt-50" onclick="selectCount(50)">50<small>Qs</small></div>
+      </div>
+    </div>
+
+    <button class="btn-launch" onclick="startQuiz()">▶ &nbsp;Launch Quiz</button>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Session Stats</div>
+    </div>
+    <div class="live-stats">
+      <div class="lstat-row">
+        <span class="lstat-label">Score</span>
+        <span class="lstat-val orange" id="ls-score">—</span>
+      </div>
+      <div class="lstat-row">
+        <span class="lstat-label">Accuracy</span>
+        <span class="lstat-val green" id="ls-acc">—</span>
+      </div>
+      <div class="lstat-row">
+        <span class="lstat-label">Streak</span>
+        <span class="lstat-val orange" id="ls-streak">—</span>
+      </div>
+      <div class="lstat-row">
+        <span class="lstat-label">Perle Pts</span>
+        <span class="lstat-val blue" id="ls-pts">—</span>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ── CONTENT ── -->
+  <div class="content">
+
+    <!-- ═══ HOME SCREEN ═══ -->
+    <div class="screen active" id="screen-home">
+      <div id="screen-home-inner">
+        <div class="home-inner">
+          <div class="home-eyebrow">Intelligence Assessment Platform</div>
+          <h1 class="home-h1">Master <em>AI & Data</em><br>Science Concepts</h1>
+          <p class="home-p">
+            Rigorous questions across machine learning theory, data infrastructure,
+            annotation pipelines, AI safety, decentralized intelligence, and Web3 data ecosystems.
+            Built for serious practitioners.
+          </p>
+          <div class="home-tags">
+            <span class="home-tag hi">ML Fundamentals</span>
+            <span class="home-tag hi">Data Annotation</span>
+            <span class="home-tag hi">MLOps</span>
+            <span class="home-tag">AI Safety & Ethics</span>
+            <span class="home-tag">Decentralized AI</span>
+            <span class="home-tag">Web3 Data</span>
+            <span class="home-tag">Advanced Systems</span>
+          </div>
+          <div class="home-stats-row">
+            <div class="hstat">
+              <span class="hstat-num">80</span>
+              <span class="hstat-lbl">Questions</span>
+            </div>
+            <div class="hstat">
+              <span class="hstat-num">7</span>
+              <span class="hstat-lbl">Topic Areas</span>
+            </div>
+            <div class="hstat">
+              <span class="hstat-num">3</span>
+              <span class="hstat-lbl">Difficulty Tiers</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ QUIZ SCREEN ═══ -->
+    <div class="screen" id="screen-quiz">
+
+      <div class="quiz-content">
+
+        <!-- Progress bar -->
+        <div class="qprogress-bar">
+          <div class="qprogress-track">
+            <div class="qprogress-fill" id="prog-fill" style="width:0%"></div>
+          </div>
+          <div class="qprogress-label" id="prog-label">0 / 10</div>
+        </div>
+
+        <!-- Two-col layout -->
+        <div class="quiz-cols">
+
+          <!-- Left: question + options -->
+          <div style="display:flex; flex-direction:column; gap:14px;">
+
+            <div class="q-card">
+              <div class="q-header">
+                <span class="q-badge" id="q-num">Q 01</span>
+                <span class="q-category" id="q-cat">AI &amp; ML</span>
+              </div>
+              <div class="q-text" id="q-text">Loading question…</div>
+            </div>
+
+            <div class="timeout-banner" id="timeout-banner">
+              ⏰ TIME'S UP — Correct answer shown above
+            </div>
+
+            <div class="options-grid" id="options-grid"></div>
+
+          </div>
+
+          <!-- Right: timer + streak + mode -->
+          <div class="quiz-right">
+            <div class="timer-card" id="timer-section">
+              <div class="timer-label-top">Time Left</div>
+              <div class="timer-ring-wrap">
+                <svg viewBox="0 0 100 100">
+                  <circle class="ring-track" cx="50" cy="50" r="43"/>
+                  <circle class="ring-prog" id="ring-prog" cx="50" cy="50" r="43"
+                    stroke-dasharray="270.2" stroke-dashoffset="0"/>
+                </svg>
+                <div class="timer-num" id="timer-num">20</div>
+              </div>
+              <div class="timer-sublabel">seconds</div>
+            </div>
+
+            <div class="streak-card">
+              <div class="streak-icon">🔥</div>
+              <div class="streak-num" id="streak-count">0</div>
+              <div class="streak-sub">Streak</div>
+            </div>
+
+            <div class="mode-badge-card">
+              <div class="mode-badge-dot"></div>
+              <div>
+                <div class="mode-badge-text" id="mode-badge-text">Timer</div>
+                <div class="mode-badge-sub">Active mode</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="btn-next-wrap">
+        <button class="btn-next" id="btn-next" onclick="nextQ()" disabled>
+          Next Question →
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ═══ RESULTS SCREEN ═══ -->
+    <div class="screen" id="screen-results">
+      <div class="results-inner">
+
+        <!-- Score strip -->
+        <div class="res-top">
+          <div class="res-score-big">
+            <div class="res-fraction" id="res-fraction">0<span>/0</span></div>
+            <div class="res-pct" id="res-pct">0% Accuracy</div>
+          </div>
+          <div class="res-info">
+            <div class="res-mission">Mission Complete</div>
+            <div class="res-grade" id="res-grade">—</div>
+            <div class="res-desc" id="res-desc">—</div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="res-stats">
+          <div class="res-stat">
+            <span class="res-stat-val" id="st-correct">0</span>
+            <span class="res-stat-key">Correct</span>
+          </div>
+          <div class="res-stat">
+            <span class="res-stat-val" id="st-wrong">0</span>
+            <span class="res-stat-key">Wrong</span>
+          </div>
+          <div class="res-stat">
+            <span class="res-stat-val" id="st-streak">0</span>
+            <span class="res-stat-key">Best Streak</span>
+          </div>
+          <div class="res-stat">
+            <span class="res-stat-val" id="st-pts">0</span>
+            <span class="res-stat-key">Perle Pts</span>
+          </div>
+        </div>
+
+        <!-- Review table -->
+        <div class="review-table-wrap">
+          <div class="review-table-head">
+            <div></div>
+            <div>Question</div>
+            <div>Correct Answer</div>
+            <div style="text-align:right">Result</div>
+          </div>
+          <div class="review-table-body" id="review-list"></div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="res-btns">
+          <button class="btn-back2" onclick="goHome()">← Back</button>
+          <button class="btn-retry2" onclick="retryQuiz()">↺ Run Again</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app-body -->
+
+<script>
+const RAW_QUESTIONS = [
+  { q: "Which gradient descent variant processes one training sample at a time, making it noisy but faster to update?", opts: ["Stochastic Gradient Descent", "Mini-batch Gradient Descent", "Full-batch Gradient Descent", "Momentum Gradient Descent"], a: 0 },
+  { q: "In the context of LLMs, what does the 'temperature' parameter control during text generation?", opts: ["The randomness of token sampling", "The model's learning rate", "The length of output text", "The number of attention heads"], a: 0 },
+  { q: "What technique prevents overfitting by randomly deactivating neurons during forward passes in training?", opts: ["Dropout", "Batch Normalization", "L2 Regularization", "Early Stopping"], a: 0 },
+  { q: "Which loss function is most commonly used for binary classification tasks?", opts: ["Binary Cross-Entropy", "Mean Squared Error", "Hinge Loss", "KL Divergence"], a: 0 },
+  { q: "What does the term 'attention mechanism' primarily allow a transformer model to do?", opts: ["Weigh the relevance of different tokens when encoding a sequence", "Compress model weights into fewer parameters", "Increase the size of training batches", "Reduce inference latency"], a: 0 },
+  { q: "RLHF fine-tunes a model using a reward signal. What generates that reward signal?", opts: ["A separate reward model trained on human preference data", "The base model's own confidence scores", "Automated unit tests on model outputs", "A fixed rule-based scoring function"], a: 0 },
+  { q: "What is the primary reason a validation dataset must remain separate from the training dataset?", opts: ["To give an unbiased estimate of model performance on unseen data", "To increase the total amount of training data available", "To speed up gradient computations", "To prevent the optimizer from diverging"], a: 0 },
+  { q: "Which phenomenon occurs when a model performs well on training data but poorly on new data?", opts: ["Overfitting", "Underfitting", "Covariate Shift", "Label Noise"], a: 0 },
+  { q: "In a confusion matrix for binary classification, what does a 'False Negative' represent?", opts: ["A positive instance incorrectly predicted as negative", "A negative instance incorrectly predicted as positive", "A positive instance correctly predicted as positive", "A negative instance correctly predicted as negative"], a: 0 },
+  { q: "What does 'transfer learning' involve in deep learning?", opts: ["Reusing weights from a pre-trained model on a new related task", "Transferring data between cloud servers", "Moving a trained model between different programming frameworks", "Training multiple models on the same dataset simultaneously"], a: 0 },
+  { q: "In semantic segmentation tasks, what does an annotator assign to each pixel in an image?", opts: ["A class label", "A bounding box", "A keypoint coordinate", "A confidence score"], a: 0 },
+  { q: "What is 'inter-annotator agreement' a measure of?", opts: ["The consistency between different human labelers on the same data", "The speed at which annotators complete tasks", "The ratio of labeled to unlabeled data in a dataset", "The accuracy of annotations against model predictions"], a: 0 },
+  { q: "Which type of dataset bias occurs when training data fails to represent all subgroups of the target population equally?", opts: ["Representation bias", "Measurement bias", "Aggregation bias", "Deployment bias"], a: 0 },
+  { q: "What is the purpose of 'data augmentation' in training computer vision models?", opts: ["Artificially expanding the dataset by applying transforms like flips and crops", "Compressing images to reduce storage costs", "Labeling images using automated tools", "Converting image formats for compatibility"], a: 0 },
+  { q: "In Named Entity Recognition (NER), what is an annotator primarily identifying?", opts: ["Mentions of entities such as people, places, and organizations in text", "Grammatical errors in sentences", "Sentiment expressed in paragraphs", "Coreference chains across documents"], a: 0 },
+  { q: "What does 'data drift' refer to in a deployed machine learning system?", opts: ["A statistical change in the input data distribution over time", "Corruption of data during storage", "Gradual deletion of old training samples", "Model weights shifting without retraining"], a: 0 },
+  { q: "Which annotation task requires marking the start and end timestamps of spoken words in an audio file?", opts: ["Forced alignment / speech segmentation", "Speaker diarization", "Sentiment tagging", "Language identification"], a: 0 },
+  { q: "What is a 'gold standard' dataset in the context of annotation quality?", opts: ["A carefully vetted set used as the reference truth for evaluating annotator accuracy", "The largest dataset available for a given domain", "A dataset generated entirely by automated labeling tools", "A publicly released benchmark from a major research institution"], a: 0 },
+  { q: "What problem does 'active learning' aim to solve in supervised ML pipelines?", opts: ["Minimizing the number of labeled samples needed by selecting the most informative ones to annotate", "Reducing model size without accuracy loss", "Speeding up inference on edge devices", "Automating hyperparameter tuning"], a: 0 },
+  { q: "OCR systems convert printed or handwritten text into machine-readable format. What is the main challenge in low-resource languages?", opts: ["Lack of sufficient training data with diverse script samples", "Higher image resolution requirements", "Incompatibility with UTF-8 encoding", "Absence of GPU support for those languages"], a: 0 },
+  { q: "Which metric is most appropriate when false negatives are more costly than false positives, such as in disease screening?", opts: ["Recall (Sensitivity)", "Precision", "Specificity", "F1 Score"], a: 0 },
+  { q: "What does the AUC-ROC curve specifically measure?", opts: ["A model's ability to discriminate between classes across all classification thresholds", "The speed of model inference across hardware types", "The ratio of correct predictions to total predictions", "The amount of memory a model consumes during training"], a: 0 },
+  { q: "In MLOps, what is 'model versioning' primarily used for?", opts: ["Tracking changes to model artifacts, configs, and performance over time", "Storing multiple copies of the same model to prevent data loss", "Encrypting model weights before deployment", "Splitting a large model into smaller deployable modules"], a: 0 },
+  { q: "What is 'A/B testing' in the context of model deployment?", opts: ["Running two model versions simultaneously to compare their real-world performance", "Testing a model on two separate datasets before release", "Alternating between training and evaluation phases", "Comparing two annotation schemas on the same dataset"], a: 0 },
+  { q: "What does a high bias in a machine learning model typically indicate?", opts: ["The model is too simple and underfits the training data", "The model is too complex and overfits the training data", "The training dataset is too small", "The learning rate is too high"], a: 0 },
+  { q: "Which technique involves training multiple models and combining their predictions to improve accuracy?", opts: ["Ensemble Learning", "Knowledge Distillation", "Weight Pruning", "Feature Scaling"], a: 0 },
+  { q: "In experiment tracking, which of the following is NOT typically logged?", opts: ["The physical location of the engineer running the experiment", "Model hyperparameters", "Evaluation metrics per epoch", "The dataset version used"], a: 0 },
+  { q: "What is 'concept drift' and how does it differ from data drift?", opts: ["Concept drift is a change in the relationship between features and the target variable, while data drift is a change in input distribution", "Concept drift is faster than data drift", "Concept drift only affects NLP models while data drift affects vision models", "They are the same phenomenon described differently"], a: 0 },
+  { q: "What is the purpose of 'cross-validation' in model evaluation?", opts: ["To provide a more reliable estimate of model performance by training and evaluating on different data splits", "To validate that the model code compiles without errors", "To test the model across different programming languages", "To compare multiple loss functions simultaneously"], a: 0 },
+  { q: "Which evaluation framework is commonly used to measure LLM performance on reasoning and knowledge benchmarks?", opts: ["MMLU (Massive Multitask Language Understanding)", "ImageNet", "COCO", "LibriSpeech"], a: 0 },
+  { q: "What does 'AI alignment' specifically refer to in AI safety research?", opts: ["Ensuring AI systems pursue goals that are consistent with human values and intentions", "Aligning the compute infrastructure for distributed training", "Matching model outputs to a fixed formatting template", "Calibrating model confidence scores to ground truth frequencies"], a: 0 },
+  { q: "Which principle does 'explainable AI (XAI)' primarily address?", opts: ["Making model decision-making processes interpretable to humans", "Reducing the cost of inference on edge hardware", "Expanding the size of training corpora", "Automating data labeling pipelines"], a: 0 },
+  { q: "What is a 'model card' as proposed by Google researchers?", opts: ["A documentation framework describing a model's intended use, performance, and limitations", "A physical chip that stores model weights", "A compressed format for distributing models", "A card game used for team alignment workshops"], a: 0 },
+  { q: "The EU AI Act classifies AI applications into risk tiers. Which application would most likely fall under 'high risk'?", opts: ["AI used in credit scoring for loan applications", "AI-generated music playlists", "AI-powered email spam filters", "AI chatbots used for entertainment"], a: 0 },
+  { q: "What is 'differential privacy' used for in AI training?", opts: ["Adding calibrated noise to data or gradients to protect individual privacy in training sets", "Encrypting model weights before distribution", "Preventing different users from accessing the same model", "Splitting datasets across geographic regions"], a: 0 },
+  { q: "Which type of AI bias arises when a model trained predominantly on data from one demographic performs worse on others?", opts: ["Representation bias", "Automation bias", "Anchoring bias", "Confirmation bias"], a: 0 },
+  { q: "What is 'federated learning' designed to address?", opts: ["Training models across decentralized devices without sharing raw data centrally", "Federating compute resources across data centers", "Managing multiple ML teams working on the same project", "Distributing inference load across multiple servers"], a: 0 },
+  { q: "In the context of AI safety, what is a 'reward hack'?", opts: ["When an AI finds an unintended shortcut to maximize its reward metric without achieving the true goal", "When a training run is interrupted and must restart", "When an annotator inflates quality scores to earn more", "When a model copies examples directly from its training data"], a: 0 },
+  { q: "What does 'data minimization' mean in responsible AI data practices?", opts: ["Collecting only the data strictly necessary for the intended purpose", "Compressing datasets to reduce storage size", "Removing all metadata from training files", "Using smaller models to reduce power consumption"], a: 0 },
+  { q: "What is the primary concern with using proxy metrics in AI evaluation?", opts: ["Optimizing for a proxy metric may not improve, and can even harm, the true objective", "Proxy metrics are too computationally expensive to calculate", "Proxy metrics are not recognized by regulatory bodies", "They require more labeled data than direct metrics"], a: 0 },
+  { q: "In a decentralized AI data marketplace, what role does a 'proof of contribution' mechanism serve?", opts: ["Verifiably crediting contributors for the quality and quantity of data or work they provide", "Preventing duplicate model uploads", "Encrypting contributor wallet addresses", "Measuring network latency between nodes"], a: 0 },
+  { q: "What distinguishes a decentralized data marketplace from a centralized one?", opts: ["Ownership and control of data remains with contributors rather than a single platform entity", "Data in a decentralized marketplace is always free to access", "Decentralized marketplaces use faster servers", "Contributors in decentralized systems cannot set prices"], a: 0 },
+  { q: "How do smart contracts enhance trust in a blockchain-based AI data platform?", opts: ["They automatically enforce agreed-upon terms without requiring a trusted intermediary", "They encrypt all data stored on the platform", "They verify the accuracy of data labels automatically", "They prevent any node from accessing data without a subscription"], a: 0 },
+  { q: "What is 'dataset traceability' and why does it matter for AI governance?", opts: ["Knowing the provenance and transformations applied to a dataset, enabling accountability and auditability", "Tracking which users downloaded a dataset for billing purposes", "Monitoring the physical location of servers storing the dataset", "Logging the inference requests made against a deployed model"], a: 0 },
+  { q: "Why might token-incentive models improve data quality in decentralized annotation platforms?", opts: ["Contributors are rewarded based on quality metrics, aligning their financial interests with accuracy", "Tokens compress the data automatically before upload", "Token holders have read-only access, preventing tampering", "Tokens replace the need for human reviewers entirely"], a: 0 },
+  { q: "What is a key technical challenge when training AI models on data stored across multiple decentralized nodes?", opts: ["Coordinating gradient aggregation without centralizing raw data, as addressed by federated learning", "Converting all data to a single file format", "Ensuring all nodes use the same GPU hardware", "Synchronizing time zones across geographically distributed servers"], a: 0 },
+  { q: "In the context of Web3 AI platforms, what does 'data sovereignty' refer to?", opts: ["The right of individuals and communities to govern how their own data is used and monetized", "A government's exclusive control over national AI infrastructure", "The ability to store data in multiple blockchain networks simultaneously", "The cryptographic security applied to model weights"], a: 0 },
+  { q: "Which consensus mechanism is most energy-efficient and commonly used in modern blockchain-based AI data platforms?", opts: ["Proof of Stake", "Proof of Work", "Proof of Authority", "Delegated Proof of Work"], a: 0 },
+  { q: "What problem does 'on-chain verification of off-chain computation' solve for AI systems?", opts: ["It allows AI training results to be audited and trusted without re-running the full computation on-chain", "It moves model inference entirely onto the blockchain", "It eliminates the need for GPUs in model training", "It ensures all training data is stored permanently on-chain"], a: 0 },
+  { q: "In decentralized AI ecosystems, what is the role of a 'data DAO'?", opts: ["Collectively governing how a shared dataset is curated, accessed, and monetized by its members", "A legal structure for registering AI companies", "An automated system for compressing large datasets", "A protocol for routing model inference requests across nodes"], a: 0 },
+  { q: "What does 'quantization' do to a neural network model?", opts: ["Reduces the precision of model weights (e.g., from 32-bit to 8-bit) to decrease size and speed up inference", "Adds more layers to increase model capacity", "Increases training data volume automatically", "Converts the model from one framework to another"], a: 0 },
+  { q: "What is 'knowledge distillation' in model compression?", opts: ["Training a smaller 'student' model to mimic the outputs of a larger 'teacher' model", "Extracting rules from a neural network into a decision tree", "Removing redundant neurons from a trained model", "Transferring knowledge between employees on an ML team"], a: 0 },
+  { q: "In transformer architecture, what is the purpose of 'positional encoding'?", opts: ["To inject information about the order of tokens since attention is position-agnostic by default", "To encode the emotional tone of each token", "To compress long sequences into fixed-length vectors", "To assign a confidence score to each token prediction"], a: 0 },
+  { q: "What is 'RAG' (Retrieval-Augmented Generation) designed to solve?", opts: ["Grounding LLM outputs in external retrieved knowledge to reduce hallucinations and improve factual accuracy", "Speeding up text generation by caching common responses", "Replacing fine-tuning with in-context examples", "Compressing embedding vectors for faster retrieval"], a: 0 },
+  { q: "What is the key distinction between a 'generative' and a 'discriminative' model?", opts: ["Generative models learn the joint distribution P(X,Y) to generate data, while discriminative models learn P(Y|X) to classify it", "Generative models always use GANs while discriminative models use CNNs", "Discriminative models require more data than generative models", "Generative models only work with text data"], a: 0 },
+  { q: "What challenge does 'catastrophic forgetting' describe in neural networks?", opts: ["A network losing previously learned knowledge when trained sequentially on new tasks", "A model suddenly failing during deployment due to hardware issues", "Gradient values becoming zero during backpropagation", "Training loss unexpectedly spiking mid-training"], a: 0 },
+  { q: "What is 'few-shot prompting' in the context of large language models?", opts: ["Providing a small number of input-output examples in the prompt to guide the model's behavior without gradient updates", "Fine-tuning a model on a very small labeled dataset", "Running inference with minimal computational resources", "Limiting the number of tokens in a system prompt"], a: 0 },
+  { q: "In the context of multimodal AI, what does 'grounding' refer to?", opts: ["Connecting abstract model representations to concrete entities or regions in the real world", "Training a model on data collected from physical sensors", "Preventing a model from generating harmful content", "Anchoring floating-point computations to integer representations"], a: 0 },
+  { q: "What is a 'vector database' primarily used for in AI applications?", opts: ["Storing and efficiently querying high-dimensional embedding vectors for similarity search", "Storing raw training images in compressed format", "Logging model inference metrics in real time", "Managing versioned datasets in ML pipelines"], a: 0 },
+  { q: "What does 'constitutional AI' (CAI), developed by Anthropic, primarily involve?", opts: ["Training AI to critique and revise its own outputs based on a set of predefined principles", "Writing legal constitutions using AI assistance", "Building AI systems governed by national AI laws", "Automatically generating training data from web sources using rules"], a: 0 },
+  { q: "What is the primary purpose of a 'feature store' in an ML platform?", opts: ["Centralizing the computation, storage, and serving of features to ensure consistency between training and inference", "Storing raw unlabeled datasets before annotation", "Hosting pre-trained model weights for download", "Managing GPU cluster allocations for training jobs"], a: 0 },
+  { q: "In data engineering for AI, what does 'schema-on-read' mean?", opts: ["The structure of data is applied at query time rather than at ingestion, enabling flexible raw data storage", "Data is validated against a schema before being written to disk", "Schema changes require re-annotating the entire dataset", "The database reads schema definitions from an external API"], a: 0 },
+  { q: "What is the 'curse of dimensionality' and why does it matter for ML datasets?", opts: ["As feature dimensions increase, data becomes exponentially sparse, making distance-based methods unreliable", "Models with more parameters always overfit regardless of data size", "High-dimensional data is incompatible with gradient descent", "Datasets with many columns are too expensive to annotate"], a: 0 },
+  { q: "Which data splitting strategy should be used for time-series data to avoid data leakage?", opts: ["Chronological splitting, where training data precedes validation and test data in time", "Random splitting to ensure uniform distribution", "Stratified splitting based on class frequencies", "K-fold cross-validation with shuffling enabled"], a: 0 },
+  { q: "What is 'label leakage' in a machine learning dataset?", opts: ["When information from the target variable inadvertently appears in the input features, inflating evaluation metrics", "When annotation labels are accidentally deleted from a dataset", "When two annotators use different labeling schemas on the same data", "When a model memorizes the exact labels in its training set"], a: 0 },
+  { q: "What does 'data lineage' track in enterprise AI systems?", opts: ["The origin, transformations, and movement of data throughout its lifecycle", "The number of times a dataset has been downloaded", "The geographic region where data is physically stored", "The contributors who annotated each record"], a: 0 },
+  { q: "In the context of data pipelines, what is 'idempotency' and why is it important?", opts: ["Running a pipeline step multiple times produces the same result, preventing duplicate or corrupted data", "The pipeline runs faster each subsequent execution", "Data is processed in the same order it was collected", "Each pipeline stage operates independently without shared state"], a: 0 },
+  { q: "What is the difference between 'structured' and 'unstructured' data in AI training contexts?", opts: ["Structured data is organized in predefined schemas (e.g., tables), while unstructured data has no predefined format (e.g., text, images)", "Structured data is always labeled while unstructured data is unlabeled", "Structured data requires GPUs to process while unstructured data can use CPUs", "Structured data comes from databases and unstructured data comes from the internet"], a: 0 },
+  { q: "What is 'synthetic data generation' used for in AI training pipelines?", opts: ["Creating artificial training examples to augment real data, especially for rare classes or privacy-sensitive domains", "Generating fake datasets to test annotation tooling", "Automatically writing code for ML pipelines", "Creating placeholder data while waiting for real annotations"], a: 0 },
+  { q: "What role does 'data governance' play in an organization's AI strategy?", opts: ["Establishing policies for data access, quality, privacy, and accountability across the full data lifecycle", "Deciding which cloud provider to use for data storage", "Managing the budget allocated for data annotation projects", "Approving which AI models are allowed to be deployed"], a: 0 },
+];
+
+function prepareQuestions(rawList) {
+  return rawList.map(item => {
+    const correctText = item.opts[item.a];
+    const shuffled = [...item.opts].sort(() => Math.random() - 0.5);
+    return { q: item.q, options: shuffled, answer: shuffled.indexOf(correctText) };
+  });
+}
+
+/* STATE */
+let mode = 'timer', countChoice = 10;
+let questions = [], currentIdx = 0, score = 0;
+let streak = 0, bestStreak = 0;
+let answered = false, timerVal = 20, timerRef = null;
+let timings = [], history = [];
+const CIRC = 2 * Math.PI * 43; // ~270.2
+
+/* SELECT */
+function selectMode(m) {
+  mode = m;
+  ['timer','free'].forEach(x => document.getElementById('mode-'+x).classList.remove('active'));
+  document.getElementById('mode-'+m).classList.add('active');
+  document.getElementById('mode-badge-text').textContent = m === 'timer' ? 'Timer' : 'Free Play';
+}
+function selectCount(n) {
+  countChoice = n;
+  [10,25,50].forEach(c => document.getElementById('cnt-'+c).classList.remove('active'));
+  document.getElementById('cnt-'+n).classList.add('active');
+}
+
+/* START */
+function startQuiz() {
+  const shuffled = prepareQuestions([...RAW_QUESTIONS].sort(() => Math.random() - 0.5));
+  questions = shuffled.slice(0, Math.min(countChoice, shuffled.length));
+  currentIdx = 0; score = 0; streak = 0; bestStreak = 0; timings = []; history = [];
+  updateSidebarStats();
+  document.getElementById('nav-qcount').textContent = questions.length;
+  document.getElementById('timer-section').style.display = mode === 'timer' ? 'flex' : 'none';
+  showScreen('screen-quiz');
+  loadQuestion();
+}
+
+/* LOAD Q */
+function loadQuestion() {
+  answered = false;
+  clearInterval(timerRef);
+  document.getElementById('timeout-banner').classList.remove('show');
+
+  const q = questions[currentIdx];
+  const total = questions.length;
+  const pct = Math.round((currentIdx / total) * 100);
+
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = currentIdx + ' / ' + total;
+  document.getElementById('q-num').textContent = 'Q ' + String(currentIdx+1).padStart(2,'0');
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('streak-count').textContent = streak;
+
+  const keys = ['A','B','C','D'];
+  document.getElementById('options-grid').innerHTML = q.options.map((o,i) => `
+    <button class="opt-btn" onclick="selectAnswer(${i})">
+      <span class="opt-key">${keys[i]}</span>
+      <span>${o}</span>
+    </button>
+  `).join('');
+
+  const btn = document.getElementById('btn-next');
+  btn.disabled = true; btn.classList.remove('ready');
+  btn.textContent = currentIdx === questions.length - 1 ? '▶ See Results' : 'Next Question →';
+
+  if (mode === 'timer') {
+    timerVal = 20; updateRing();
+    timerRef = setInterval(() => {
+      timerVal--;
+      updateRing();
+      if (timerVal <= 0) { clearInterval(timerRef); timings.push(20); if (!answered) timeOut(); }
+    }, 1000);
+  } else {
+    window._qStart = Date.now();
+  }
+}
+
+function updateRing() {
+  const offset = CIRC * (1 - timerVal / 20);
+  const ring = document.getElementById('ring-prog');
+  ring.style.strokeDashoffset = offset;
+  ring.classList.toggle('urgent', timerVal <= 6);
+  const numEl = document.getElementById('timer-num');
+  numEl.textContent = timerVal;
+  numEl.classList.toggle('urgent', timerVal <= 6);
+}
+
+/* ANSWER */
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerRef);
+
+  const elapsed = mode === 'timer'
+    ? (20 - timerVal)
+    : Math.round((Date.now() - (window._qStart || Date.now())) / 1000);
+  timings.push(elapsed);
+
+  const q = questions[currentIdx];
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const correct = idx === q.answer;
+  btns[idx].classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) btns[q.answer].classList.add('correct');
+
+  if (correct) { score++; streak++; bestStreak = Math.max(bestStreak, streak); }
+  else { streak = 0; }
+  document.getElementById('streak-count').textContent = streak;
+  updateSidebarStats();
+  history.push({ correct, chosen: idx, right: q.answer, q: q.q, opts: q.options });
+  enableNext();
+}
+
+function timeOut() {
+  answered = true;
+  const q = questions[currentIdx];
+  document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+  document.querySelectorAll('.opt-btn')[q.answer].classList.add('correct');
+  streak = 0;
+  document.getElementById('streak-count').textContent = streak;
+  document.getElementById('timeout-banner').classList.add('show');
+  history.push({ correct: false, chosen: -1, right: q.answer, q: q.q, opts: q.options });
+  updateSidebarStats();
+  enableNext();
+}
+
+function enableNext() {
+  const btn = document.getElementById('btn-next');
+  btn.disabled = false; btn.classList.add('ready');
+  btn.textContent = currentIdx === questions.length - 1 ? '▶ See Results' : 'Next Question →';
+}
+
+function updateSidebarStats() {
+  const answered2 = currentIdx + (answered ? 1 : 0);
+  const acc = answered2 > 0 ? Math.round((score / answered2) * 100) : 0;
+  const pts = score * 10 + bestStreak * 5;
+  document.getElementById('ls-score').textContent  = score > 0 || answered2 > 0 ? score + ' / ' + answered2 : '—';
+  document.getElementById('ls-acc').textContent    = answered2 > 0 ? acc + '%' : '—';
+  document.getElementById('ls-streak').textContent = bestStreak > 0 ? '🔥 ' + bestStreak : '—';
+  document.getElementById('ls-pts').textContent    = pts > 0 ? pts : '—';
+  document.getElementById('nav-pts').textContent   = pts + ' pts';
+}
+
+/* NEXT */
+function nextQ() {
+  if (currentIdx < questions.length - 1) { currentIdx++; loadQuestion(); }
+  else { showResults(); }
+}
+
+/* RESULTS */
+function showResults() {
+  showScreen('screen-results');
+  const total = questions.length;
+  const pct   = Math.round((score / total) * 100);
+  const avgT  = timings.length ? Math.round(timings.reduce((a,b)=>a+b,0)/timings.length) : 0;
+  const pts   = score * 10 + bestStreak * 5;
+
+  document.getElementById('res-fraction').innerHTML = score + '<span>/' + total + '</span>';
+  document.getElementById('res-pct').textContent = pct + '% Accuracy';
+  document.getElementById('st-correct').textContent = score;
+  document.getElementById('st-wrong').textContent   = total - score;
+  document.getElementById('st-streak').textContent  = bestStreak;
+  document.getElementById('st-pts').textContent     = pts;
+
+  const tiers = [
+    [100, '🏆 Perfect Score',    '#FF6B1A', 'Exceptional. You answered every question correctly — elite level.'],
+    [80,  '⭐ Excellent',         '#FF8C42', 'Sharp mind. Strong command across all topic areas.'],
+    [60,  '✅ Solid Performance', '#2979FF', 'Good foundations. A few areas to revisit and reinforce.'],
+    [40,  '📊 Average',           '#9A8F88', 'Decent start. Focus on the missed topics and run again.'],
+    [0,   '🔬 Needs Work',        '#FF4444', 'Hit the documentation. Study, practice, and come back stronger.'],
+  ];
+  const [, label, color, desc] = tiers.find(([t]) => pct >= t);
+  document.getElementById('res-grade').textContent = label;
+  document.getElementById('res-grade').style.color  = color;
+  document.getElementById('res-desc').textContent  = desc;
+
+  document.getElementById('review-list').innerHTML = history.map(h => `
+    <div class="review-row">
+      <div class="rr-dot ${h.correct ? 'c' : 'w'}">${h.correct ? '✓' : '✗'}</div>
+      <div class="rr-q">${h.q}</div>
+      <div class="rr-ans">${h.opts[h.right]}</div>
+      <div class="rr-status ${h.correct ? 'c' : 'w'}">${h.correct ? 'Correct' : (h.chosen === -1 ? 'Timeout' : 'Wrong')}</div>
+    </div>
+  `).join('');
+
+  // Update sidebar
+  document.getElementById('ls-score').textContent  = score + ' / ' + total;
+  document.getElementById('ls-acc').textContent    = pct + '%';
+  document.getElementById('ls-streak').textContent = '🔥 ' + bestStreak;
+  document.getElementById('ls-pts').textContent    = pts;
+}
+
+/* NAV */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome()    { clearInterval(timerRef); showScreen('screen-home'); }
+function retryQuiz() { clearInterval(timerRef); startQuiz(); }
+
+/* Init */
+document.getElementById('timer-section').style.display = 'flex';
+</script>
+</body>
+</html>
