@@ -172,7 +172,7 @@ button { font-family: var(--f-ui); }
 .sidebar::-webkit-scrollbar { display: none; }
 
 .sidebar-section {
-  padding: 20px 20px 8px;
+  padding: 16px 16px 10px;
 }
 .sidebar-label {
   font-size: 10px; font-weight: 700;
@@ -225,7 +225,7 @@ button { font-family: var(--f-ui); }
 .sidebar-divider { height: 1px; background: var(--line); margin: 4px 0; }
 
 /* Q count chips */
-.count-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.count-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
 .count-chip {
   flex: 1; min-width: 60px;
   background: var(--card);
@@ -250,17 +250,40 @@ button { font-family: var(--f-ui); }
   background: rgba(255,107,26,0.07);
 }
 
+/* Difficulty chips */
+.diff-chips { display: flex; gap: 8px; margin-bottom: 4px; }
+.diff-chip {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer; transition: all 0.18s;
+  font-size: 12px; font-weight: 700;
+  color: var(--t2); letter-spacing: 0.05em;
+}
+.diff-chip small {
+  display: block; font-family: var(--f-ui);
+  font-size: 10px; font-weight: 500;
+  color: var(--t3); margin-top: 2px; letter-spacing: 0.06em;
+}
+.diff-chip:hover { border-color: var(--line-o); color: var(--t1); }
+.diff-chip.easy.active  { border-color: var(--ok); color: var(--ok); background: rgba(0,214,143,0.07); box-shadow: 0 0 0 1px var(--ok); }
+.diff-chip.hard.active  { border-color: var(--orange); color: var(--orange); background: rgba(255,107,26,0.07); box-shadow: 0 0 0 1px var(--orange); }
+
 /* Start button */
 .btn-launch {
-  margin: 16px 20px 20px;
-  width: calc(100% - 40px);
-  padding: 14px;
+  display: block;
+  width: calc(100% - 32px);
+  margin: 8px 16px 16px;
+  padding: 13px 16px;
   background: linear-gradient(135deg, var(--orange) 0%, var(--red) 100%);
   color: #fff; border: none; border-radius: var(--r);
-  font-size: 13px; font-weight: 700;
+  font-size: 12px; font-weight: 700;
   letter-spacing: 0.12em; text-transform: uppercase;
   cursor: pointer; transition: all 0.2s;
-  box-shadow: 0 4px 20px rgba(255,107,26,0.22);
+  box-shadow: 0 2px 14px rgba(255,107,26,0.18);
   position: relative; overflow: hidden;
 }
 .btn-launch::before {
@@ -307,7 +330,8 @@ button { font-family: var(--f-ui); }
 
 /* ═══ WELCOME / HOME SCREEN ═══ */
 #screen-home {
-  flex: 1; align-items: center; justify-content: center;
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
   padding: 40px 32px;
 }
 .home-inner { max-width: 560px; width: 100%; }
@@ -358,7 +382,7 @@ button { font-family: var(--f-ui); }
 
 /* ═══ QUIZ SCREEN ═══ */
 #screen-quiz { padding: 0; }
-.quiz-content { flex: 1; padding: 28px 32px; display: flex; flex-direction: column; gap: 20px; }
+.quiz-content { flex: 1; padding: 28px 32px; display: flex; flex-direction: column; gap: 20px; min-height: 0; }
 
 /* Progress header bar */
 .qprogress-bar {
@@ -538,14 +562,14 @@ button { font-family: var(--f-ui); }
 .timeout-banner.show { display: block; }
 
 /* Next button */
-.btn-next-wrap { padding: 0 32px 24px; }
 .btn-next {
-  width: 100%; padding: 14px;
+  width: 100%; padding: 13px 20px;
   background: transparent;
   border: 1px solid var(--line); border-radius: var(--r);
-  font-size: 12px; font-weight: 700; letter-spacing: 0.15em;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--t3);
   cursor: pointer; transition: all 0.18s;
+  margin-top: 4px;
 }
 .btn-next:hover:not(:disabled) { border-color: var(--line-o); color: var(--orange); }
 .btn-next:disabled { opacity: 0.3; cursor: default; }
@@ -558,7 +582,7 @@ button { font-family: var(--f-ui); }
 
 /* ═══ RESULTS SCREEN ═══ */
 #screen-results { padding: 0; }
-.results-inner { flex: 1; padding: 28px 32px; }
+.results-inner { flex: 1; padding: 28px 32px; overflow-y: auto; }
 
 /* Top score strip */
 .res-top {
@@ -666,7 +690,7 @@ button { font-family: var(--f-ui); }
 .rr-status.w { color: var(--err); }
 
 /* Result action buttons */
-.res-btns { display: flex; gap: 12px; }
+.res-btns { display: flex; gap: 12px; justify-content: flex-start; align-items: center; padding-top: 4px; }
 .btn-retry2 {
   flex: 1; max-width: 220px; padding: 14px;
   background: linear-gradient(135deg, var(--orange), var(--red));
@@ -718,7 +742,6 @@ button { font-family: var(--f-ui); }
       <img src="data:image/png;base64,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" alt="Perle Labs"/>
     </div>
     <span class="nav-title">PERLE <span>LABS</span></span>
-    <span class="nav-pill">Quiz Platform</span>
   </div>
   <div class="nav-right">
     <span class="nav-stat">Questions <strong id="nav-qcount">80</strong></span>
@@ -745,12 +768,22 @@ button { font-family: var(--f-ui); }
         <div class="mode-check">✓</div>
       </div>
       <div class="mode-card" id="mode-free" onclick="selectMode('free')">
-        <div class="mode-icon">🧠</div>
+        <div class="mode-icon">∞</div>
         <div class="mode-info">
           <div class="mode-name">Free Play</div>
           <div class="mode-desc">No time pressure</div>
         </div>
         <div class="mode-check">✓</div>
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Difficulty</div>
+      <div class="diff-chips">
+        <div class="diff-chip easy active" id="diff-easy" onclick="selectDiff('easy')">Easy<small>Beginner</small></div>
+        <div class="diff-chip hard" id="diff-hard" onclick="selectDiff('hard')">Hard<small>Advanced</small></div>
       </div>
     </div>
 
@@ -765,7 +798,9 @@ button { font-family: var(--f-ui); }
       </div>
     </div>
 
-    <button class="btn-launch" onclick="startQuiz()">▶ &nbsp;Launch Quiz</button>
+    <div style="padding: 0 16px 16px;">
+      <button class="btn-launch" onclick="startQuiz()" style="width:100%; margin:0; display:block;">▶ &nbsp;Launch Quiz</button>
+    </div>
 
     <div class="sidebar-divider"></div>
 
@@ -798,8 +833,7 @@ button { font-family: var(--f-ui); }
 
     <!-- ═══ HOME SCREEN ═══ -->
     <div class="screen active" id="screen-home">
-      <div id="screen-home-inner">
-        <div class="home-inner">
+      <div class="home-inner">
           <div class="home-eyebrow">Intelligence Assessment Platform</div>
           <h1 class="home-h1">Master <em>AI & Data</em><br>Science Concepts</h1>
           <p class="home-p">
@@ -818,21 +852,20 @@ button { font-family: var(--f-ui); }
           </div>
           <div class="home-stats-row">
             <div class="hstat">
-              <span class="hstat-num">80</span>
-              <span class="hstat-lbl">Questions</span>
+              <span class="hstat-num">50</span>
+              <span class="hstat-lbl">Easy Qs</span>
             </div>
             <div class="hstat">
-              <span class="hstat-num">7</span>
-              <span class="hstat-lbl">Topic Areas</span>
+              <span class="hstat-num">71</span>
+              <span class="hstat-lbl">Hard Qs</span>
             </div>
             <div class="hstat">
-              <span class="hstat-num">3</span>
-              <span class="hstat-lbl">Difficulty Tiers</span>
+              <span class="hstat-num">2</span>
+              <span class="hstat-lbl">Difficulty Levels</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
     <!-- ═══ QUIZ SCREEN ═══ -->
     <div class="screen" id="screen-quiz">
@@ -866,6 +899,10 @@ button { font-family: var(--f-ui); }
             </div>
 
             <div class="options-grid" id="options-grid"></div>
+
+              <button class="btn-next" id="btn-next" onclick="nextQ()" disabled>
+                Next Question →
+              </button>
 
           </div>
 
@@ -903,11 +940,7 @@ button { font-family: var(--f-ui); }
 
       </div>
 
-      <div class="btn-next-wrap">
-        <button class="btn-next" id="btn-next" onclick="nextQ()" disabled>
-          Next Question →
-        </button>
-      </div>
+      
 
     </div>
 
@@ -972,7 +1005,60 @@ button { font-family: var(--f-ui); }
 </div><!-- /app-body -->
 
 <script>
-const RAW_QUESTIONS = [
+const EASY_QUESTIONS = [
+  { q: "What does AI stand for?", opts: ["Artificial Intelligence", "Automated Internet", "Advanced Interface", "Artificial Internet"], a: 0 },
+  { q: "What is machine learning?", opts: ["Computers learning patterns from data", "Installing software automatically", "Running websites faster", "Encrypting databases"], a: 0 },
+  { q: "What is a dataset?", opts: ["A collection of data used for analysis", "A type of computer chip", "A programming language", "A web browser"], a: 0 },
+  { q: "What is data annotation?", opts: ["Labeling data for AI training", "Deleting data from servers", "Compressing files", "Encrypting information"], a: 0 },
+  { q: "What does RLHF stand for?", opts: ["Reinforcement Learning from Human Feedback", "Rapid Learning Hardware Function", "Random Logic Human Framework", "Real Language Human Filter"], a: 0 },
+  { q: "Why is human feedback useful in AI training?", opts: ["It improves model accuracy", "It deletes errors automatically", "It compresses datasets", "It increases internet speed"], a: 0 },
+  { q: "What is a neural network?", opts: ["A brain-inspired computing model", "A type of internet router", "A computer monitor", "A web browser plugin"], a: 0 },
+  { q: "What is an AI model?", opts: ["A trained algorithm that makes predictions", "A type of robot hardware", "A database server", "A computer operating system"], a: 0 },
+  { q: "What is supervised learning?", opts: ["Learning from labeled data", "Learning without data", "Learning from random signals", "Learning from internet traffic"], a: 0 },
+  { q: "What is unsupervised learning?", opts: ["Learning without labeled data", "Learning from labeled datasets only", "Learning with human supervision", "Learning from spreadsheets"], a: 0 },
+  { q: "What is reinforcement learning?", opts: ["Learning through rewards and feedback", "Learning by deleting data", "Learning from internet browsing", "Learning from random numbers"], a: 0 },
+  { q: "What is model training?", opts: ["Teaching an AI model using data", "Deleting model files", "Compressing model size", "Encrypting algorithms"], a: 0 },
+  { q: "What is model evaluation?", opts: ["Testing how well a model performs", "Deleting model data", "Compressing datasets", "Encrypting files"], a: 0 },
+  { q: "What is a validation dataset?", opts: ["Data used during training to tune models", "Data used for backups", "Data used for internet security", "Data used for storage only"], a: 0 },
+  { q: "What is a test dataset?", opts: ["Data used to evaluate a trained model", "Data used to store websites", "Data used for software installation", "Data used for encryption"], a: 0 },
+  { q: "What is model bias?", opts: ["When AI produces unfair or skewed results", "When AI runs faster", "When AI deletes data", "When AI compresses files"], a: 0 },
+  { q: "What is overfitting?", opts: ["Model memorizing training data too closely", "Model deleting data", "Model running faster", "Model storing more files"], a: 0 },
+  { q: "What is AI hallucination?", opts: ["AI generating incorrect information confidently", "AI shutting down unexpectedly", "AI compressing files", "AI deleting data"], a: 0 },
+  { q: "What is data quality?", opts: ["Accuracy and reliability of data", "Size of the dataset", "Color of files", "Speed of servers"], a: 0 },
+  { q: "What is a data pipeline?", opts: ["System that processes and moves data", "Internet cable", "Storage device", "Database password"], a: 0 },
+  { q: "What is human-in-the-loop AI?", opts: ["AI improved with human feedback", "AI working without humans", "AI stored offline", "AI running on hardware only"], a: 0 },
+  { q: "What is expert annotation?", opts: ["Labeling data by specialists", "Labeling data randomly", "Labeling data automatically", "Deleting datasets"], a: 0 },
+  { q: "What is annotation accuracy?", opts: ["Correctness of data labels", "Speed of labeling", "Size of datasets", "Color of files"], a: 0 },
+  { q: "What is annotation consensus?", opts: ["Agreement among annotators", "Deleting data", "Compressing datasets", "Encrypting files"], a: 0 },
+  { q: "What is dataset curation?", opts: ["Organizing and improving datasets", "Deleting all datasets", "Compressing files", "Encrypting files"], a: 0 },
+  { q: "What is dataset bias?", opts: ["Unbalanced representation in data", "Large dataset size", "Small dataset size", "Dataset encryption"], a: 0 },
+  { q: "What is data drift?", opts: ["Changes in data patterns over time", "Deleting datasets", "Compressing files", "Encrypting data"], a: 0 },
+  { q: "What is explainable AI?", opts: ["AI whose decisions can be understood", "AI running faster", "AI storing more data", "AI compressing files"], a: 0 },
+  { q: "What is AI safety?", opts: ["Ensuring AI behaves responsibly", "Making AI faster", "Making AI cheaper", "Making AI smaller"], a: 0 },
+  { q: "What is MLOps?", opts: ["Managing machine learning systems in production", "Programming language for AI", "Database system", "Internet security tool"], a: 0 },
+  { q: "What is model retraining?", opts: ["Training a model again with new data", "Deleting models", "Compressing models", "Encrypting models"], a: 0 },
+  { q: "What is experiment tracking?", opts: ["Recording AI experiments and results", "Deleting experiments", "Compressing experiments", "Encrypting experiments"], a: 0 },
+  { q: "What is model monitoring?", opts: ["Tracking model performance over time", "Deleting models", "Compressing models", "Encrypting models"], a: 0 },
+  { q: "What is image annotation?", opts: ["Labeling objects in images", "Deleting images", "Compressing images", "Encrypting images"], a: 0 },
+  { q: "What is text annotation?", opts: ["Labeling text data", "Deleting text", "Compressing text", "Encrypting text"], a: 0 },
+  { q: "What is audio annotation?", opts: ["Labeling sound data", "Deleting audio", "Compressing audio", "Encrypting audio"], a: 0 },
+  { q: "What is video annotation?", opts: ["Labeling video data", "Deleting videos", "Compressing videos", "Encrypting videos"], a: 0 },
+  { q: "What is object detection?", opts: ["Identifying objects in images", "Compressing images", "Deleting images", "Encrypting images"], a: 0 },
+  { q: "What is segmentation in AI?", opts: ["Dividing images into regions", "Deleting image parts", "Compressing images", "Encrypting images"], a: 0 },
+  { q: "What is speech recognition?", opts: ["AI understanding spoken language", "AI deleting audio", "AI compressing audio", "AI encrypting audio"], a: 0 },
+  { q: "What is OCR?", opts: ["Reading text from images", "Compressing images", "Encrypting images", "Deleting images"], a: 0 },
+  { q: "What is fairness evaluation?", opts: ["Checking AI fairness", "Testing AI speed", "Testing storage capacity", "Deleting datasets"], a: 0 },
+  { q: "What is error analysis?", opts: ["Studying model mistakes", "Deleting errors", "Compressing files", "Encrypting logs"], a: 0 },
+  { q: "What is risk assessment in AI?", opts: ["Identifying potential AI risks", "Deleting models", "Compressing models", "Encrypting models"], a: 0 },
+  { q: "What is decentralized AI?", opts: ["AI supported by distributed networks", "AI stored on one computer", "AI offline", "AI deleted"], a: 0 },
+  { q: "What is blockchain verification?", opts: ["Verifying data on blockchain", "Deleting transactions", "Compressing transactions", "Encrypting websites"], a: 0 },
+  { q: "What is a token incentive?", opts: ["Reward for contributors", "Data compression", "Data deletion", "Data encryption"], a: 0 },
+  { q: "What is multimodal AI?", opts: ["AI using multiple data types", "AI using only text", "AI using only numbers", "AI using only images"], a: 0 },
+  { q: "What is a multimodal dataset?", opts: ["Dataset with text, images, and audio", "Dataset with numbers only", "Dataset with text only", "Dataset with images only"], a: 0 },
+  { q: "What is data governance?", opts: ["Policies for managing data", "Deleting datasets", "Compressing datasets", "Encrypting datasets"], a: 0 },
+];
+
+const HARD_QUESTIONS = [
   { q: "Which gradient descent variant processes one training sample at a time, making it noisy but faster to update?", opts: ["Stochastic Gradient Descent", "Mini-batch Gradient Descent", "Full-batch Gradient Descent", "Momentum Gradient Descent"], a: 0 },
   { q: "In the context of LLMs, what does the 'temperature' parameter control during text generation?", opts: ["The randomness of token sampling", "The model's learning rate", "The length of output text", "The number of attention heads"], a: 0 },
   { q: "What technique prevents overfitting by randomly deactivating neurons during forward passes in training?", opts: ["Dropout", "Batch Normalization", "L2 Regularization", "Early Stopping"], a: 0 },
@@ -1054,7 +1140,7 @@ function prepareQuestions(rawList) {
 }
 
 /* STATE */
-let mode = 'timer', countChoice = 10;
+let mode = 'timer', countChoice = 10, difficulty = 'easy';
 let questions = [], currentIdx = 0, score = 0;
 let streak = 0, bestStreak = 0;
 let answered = false, timerVal = 20, timerRef = null;
@@ -1073,10 +1159,16 @@ function selectCount(n) {
   [10,25,50].forEach(c => document.getElementById('cnt-'+c).classList.remove('active'));
   document.getElementById('cnt-'+n).classList.add('active');
 }
+function selectDiff(d) {
+  difficulty = d;
+  ['easy','hard'].forEach(x => document.getElementById('diff-'+x).classList.remove('active'));
+  document.getElementById('diff-'+d).classList.add('active');
+}
 
 /* START */
 function startQuiz() {
-  const shuffled = prepareQuestions([...RAW_QUESTIONS].sort(() => Math.random() - 0.5));
+  const bank = difficulty === 'easy' ? EASY_QUESTIONS : HARD_QUESTIONS;
+  const shuffled = prepareQuestions([...bank].sort(() => Math.random() - 0.5));
   questions = shuffled.slice(0, Math.min(countChoice, shuffled.length));
   currentIdx = 0; score = 0; streak = 0; bestStreak = 0; timings = []; history = [];
   updateSidebarStats();
@@ -1097,7 +1189,7 @@ function loadQuestion() {
   const pct = Math.round((currentIdx / total) * 100);
 
   document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('prog-label').textContent = currentIdx + ' / ' + total;
+  document.getElementById('prog-label').textContent = (currentIdx + 1) + ' / ' + total;
   document.getElementById('q-num').textContent = 'Q ' + String(currentIdx+1).padStart(2,'0');
   document.getElementById('q-text').textContent = q.q;
   document.getElementById('streak-count').textContent = streak;
@@ -1183,6 +1275,7 @@ function enableNext() {
 }
 
 function updateSidebarStats() {
+  if (!questions.length) return;
   const answered2 = currentIdx + (answered ? 1 : 0);
   const acc = answered2 > 0 ? Math.round((score / answered2) * 100) : 0;
   const pts = score * 10 + bestStreak * 5;
@@ -1247,11 +1340,17 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function goHome()    { clearInterval(timerRef); showScreen('screen-home'); }
+function goHome() {
+  clearInterval(timerRef);
+  showScreen('screen-home');
+  ['ls-score','ls-acc','ls-streak','ls-pts'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+  });
+  document.getElementById('nav-pts').textContent = '0 pts';
+}
 function retryQuiz() { clearInterval(timerRef); startQuiz(); }
 
-/* Init */
-document.getElementById('timer-section').style.display = 'flex';
+/* Init — timer section visibility controlled by startQuiz() */
 </script>
 </body>
 </html>
